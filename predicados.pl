@@ -1,10 +1,15 @@
 :-[tdazonas].
 :-[tdacommit].
 
-/*gitInit(NombreRepo,Autor,RepoOutput):-
-    nombreRep(NombreRepo),
+gitInit(NombreRepo,Autor,RepoOutput):-
     autor(Autor),
-    zonas().*/
+    nombreRepo(NombreRepo),
+    get_time(Segundos), convert_time(Segundos,Fecha),
+    workspaceInit(WS),
+    indexInit(I),
+    localRInit(LR),
+    remoteRInit(RR),
+    RepoOutput=[NombreRepo,Autor,Fecha,WS,I,LR,RR].
 %
 %
 /*********** GIT ADD *******************/
@@ -50,13 +55,26 @@ gitAdd(RepoInput,Archivos,RepoOutput):-
     nuevoIndex(_,Archivos,_,_,RepoOutput).
 %gitAdd(RepoInput,["file1","file1","file2"],RepoOutput).
 
+nuevoLocalR(_,_,[],_,Zona):-!,zonas(Zona),write("No hay cambios en el index").
+nuevoLocalR(LocalR,Mensaje,Cambios,NuevoLocalR,NuevaZona):-
+    localRSel(LocalR),
+    commitCons(_,_,Mensaje,Cambios,Commit),
+    agregarArchivo(Commit,LocalR,NuevoLocalR),
+    setLocalR(_,_,_,_,_,NuevoLocalR,_,NuevaZona).
 
-/*gitCommit(RepoInput,Mensaje,RepoOutput):-
-    zonas(RepoInput).
+gitCommit(RepoInput,Mensaje,RepoOutput):-
+    zonas(RepoInput),
+    string(Mensaje),
+    indexSel(Cambios),
+    nuevoLocalR(_,Mensaje,Cambios,_,RepoOutput).
 
 
-gitPush(RepoInput,RepoOutput):-
+/*gitPush(RepoInput,RepoOutput):-
     zonas(RepoInput).
 
 git2String(RepoInput,RepoAstring):-
     zonas(RepoInput).*/
+
+
+
+

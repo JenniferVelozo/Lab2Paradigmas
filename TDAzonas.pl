@@ -1,3 +1,4 @@
+:-[tdacommit].
 %Dominios
 %NombreRepositorio = symbol; string
 %ListaArchivos = lista
@@ -24,24 +25,28 @@
 
 %Clausulas de Horn
 %Hechos
-nombreRep("Lab2").
-workspace([["file1","cont1"],["file2","cont"]]).
-indexx([]).
-localR([["file5","cont5"],["file6","cont6"]]).
-remoteR([["file7","cont7"],["file8","cont8"]]).
-fecha("01/07/2020").
-hora("22:56").
+nombreRepo("Lab2").
+workspaceInit([]).
+indexInit([]).
+localRInit([]).
+remoteRInit([]).
 
-newIndex(_).
+workspace([["f1","c1"],["f2","c2"]]).
+indexx([]).
+localR([["JV","05/07/2020 18:40","Ediciones",[["f5","c5"],["f6","c6"]]]]).
+remoteR([["JV", "04/07/2020 13:20", "My commit",[["file7","c7"]]]]).
+
 %Reglas
 %Constructor de zonas
-zonasCons(Nombre,Fecha,Hora,WS,I,LR,RR,Zonas):-nombreRep(Nombre),
-                                     fecha(Fecha), hora(Hora),
+zonasCons(Nombre,Autor,Fecha,WS,I,LR,RR,Zonas):-nombreRepo(Nombre),
+                                     autor(Autor),
+                                     get_time(Segundos),
+                                     convert_time(Segundos,Fecha),
                                      workspace(WS),
                                      indexx(I),
                                      localR(LR),
                                      remoteR(RR),
-                                     Zonas=[Nombre,Fecha,Hora,WS,I,LR,RR].
+                                     Zonas=[Nombre,Autor,Fecha,WS,I,LR,RR].
 %Selectores
 zonas(Zonas):-zonasCons(_,_,_,_,_,_,_,Zonas).
 nombreRepSel(Nombre):-zonasCons(Nombre,_,_,_,_,_,_,_).
@@ -51,13 +56,25 @@ localRSel(LR):-zonasCons(_,_,_,_,_,LR,_,_).
 remoteRSel(RR):-zonasCons(_,_,_,_,_,_,RR,_).
 
 %Modificadores
-setIndex(Nombre,Fecha,Hora,WS,NewIndex,LR,RR,Zonas):-nombreRep(Nombre),
-                                     fecha(Fecha), hora(Hora),
+setIndex(Nombre,Autor,Fecha,WS,NewIndex,LR,RR,Zonas):-nombreRepo(Nombre),
+                                     autor(Autor),
+                                     get_time(Segundos),
+                                     convert_time(Segundos,Fecha),
                                      workspace(WS),
-                                     newIndex(NewIndex),
+                                     is_list(NewIndex),
                                      localR(LR),
                                      remoteR(RR),
-                                     Zonas=[Nombre,Fecha,Hora,WS,NewIndex,LR,RR].
+                                     Zonas=[Nombre,Autor,Fecha,WS,NewIndex,LR,RR].
+
+setLocalR(Nombre,Autor,Fecha,WS,I,NewLR,RR,Zonas):-nombreRepo(Nombre),
+                                     autor(Autor),
+                                     get_time(Segundos),
+                                     convert_time(Segundos,Fecha),
+                                     workspace(WS),
+                                     indexx(I),
+                                     is_list(NewLR),
+                                     remoteR(RR),
+                                     Zonas=[Nombre,Autor,Fecha,WS,I,NewLR,RR].
 
 
 

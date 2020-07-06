@@ -1,10 +1,15 @@
 :-[tdazonas].
 :-[tdacommit].
 
-/*gitInit(NombreRepo,Autor,RepoOutput):-
-    nombreRep(NombreRepo),
+gitInit(NombreRepo,Autor,RepoOutput):-
     autor(Autor),
-    zonas().*/
+    nombreRepo(NombreRepo),
+    get_time(Segundos), convert_time(Segundos,Fecha),
+    workspaceInit(WS),
+    indexInit(I),
+    localRInit(LR),
+    remoteRInit(RR),
+    RepoOutput=[NombreRepo,Autor,Fecha,WS,I,LR,RR].
 %
 %
 /*********** GIT ADD *******************/
@@ -28,7 +33,7 @@ deleteDup([Elemento|Lista], [Elemento|Lista3]) :- subtract(Lista, [Elemento], Li
 % sin repetir
 gitAddAux(_,[],_,Movidos,Movidos):-!.
 gitAddAux(RepoInput,[Cabeza|Cola],WS,Salida,Output):-
-    zonas(RepoInput),
+    is_list(RepoInput),
     workspaceSel(WS),
     miembroWorkspace(WS,Cabeza,Archivo),
     agregarArchivo(Archivo,Salida,Movidos),
@@ -45,18 +50,31 @@ nuevoIndex(Index,[Cabeza|Cola],Movidos,NuevoIndex,NuevaZona):-
 %nuevoIndex(Index,["file1","file2","file2"],Movidos,Nuevo,Zonas).
 
 gitAdd(RepoInput,Archivos,RepoOutput):-
-    zonas(RepoInput),
+    is_list(RepoInput),
     is_list(Archivos),
     nuevoIndex(_,Archivos,_,_,RepoOutput).
 %gitAdd(RepoInput,["file1","file1","file2"],RepoOutput).
 
+nuevoLocalR(_,_,[],_,Zona):-!,zonas(Zona),write("No hay cambios en el index").
+nuevoLocalR(LocalR,Mensaje,Cambios,NuevoLocalR,NuevaZona):-
+    localRSel(LocalR),
+    commitCons(_,_,Mensaje,Cambios,Commit),
+    agregarArchivo(Commit,LocalR,NuevoLocalR),
+    setLocalR(_,_,_,_,_,NuevoLocalR,_,NuevaZona).
 
-/*gitCommit(RepoInput,Mensaje,RepoOutput):-
-    zonas(RepoInput).
+gitCommit(RepoInput,Mensaje,RepoOutput):-
+    is_list(RepoInput),
+    string(Mensaje),
+    indexSel(Cambios),
+    nuevoLocalR(_,Mensaje,Cambios,_,RepoOutput).
 
 
-gitPush(RepoInput,RepoOutput):-
+/*gitPush(RepoInput,RepoOutput):-
     zonas(RepoInput).
 
 git2String(RepoInput,RepoAstring):-
-    zonas(RepoInput).
+    zonas(RepoInput).*/
+
+
+
+
