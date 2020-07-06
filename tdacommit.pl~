@@ -20,17 +20,15 @@
 
 %Clausulas de Horn
 %Hechos
-autor("Jennifer").
+
 
 %Reglas
-commitCons(Autor,Fecha,Mensaje,Cambios,Commit):-
-    autor(Autor),
+commitCons(Fecha,Mensaje,Cambios,Commit):-
     get_time(Segundos),convert_time(Segundos,Fecha),
     string(Mensaje),
     is_list(Cambios),
-    Commit=[Autor,Fecha,Mensaje,Cambios].
+    Commit=[Fecha,Mensaje,Cambios].
 
-commit(Commit):- commitCons(_,_,_,_,_,Commit).
-autorSel(Autor):-commitCons(Autor,_,_,_,_,_).
-mensajeSel(Mensaje):- commitCons(_,_,_,Mensaje,_,_).
-cambiosSel(Cambios):-commitCons(_,_,_,_,Cambios,_).
+commit(Commit):- commitCons(_,_,_,_,Commit).
+mensajeSel(Mensaje):- commitCons(_,_,Mensaje,_,_).
+cambiosSel(Cambios):-commitCons(_,_,_,Cambios,_).
