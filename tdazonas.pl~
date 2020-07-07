@@ -15,7 +15,6 @@
 %zonas(Nombre,Fecha,Hora,WS,I,LR,RR).
 
 %Secundarias
-%nombreRep(NombreRepositorio).
 %workspace(ListaArchivos).
 %index(ListaArchivos).
 %localR(ListaArchivos).
@@ -24,50 +23,87 @@
 
 %Clausulas de Horn
 %Hechos
-
-workspace([["f1","C1"],["f2","C2"]]).
-indexx([]).
+workspace([["arch.rkt","sdd"]]).
+indexx([["ssd.c","sds"]]).
 localR([]).
 remoteR([]).
+% formato workspace e index[["file","contenido],["file2","contenido2"]]
+% es una lista que contiene archivos
+% formato LR y RR = una lista con commits=
+% [["mensaje1",[["f1","c1],["f2","c2"]]],["mensaje2",[["arch1","ssd"],["arch2","wssa"]]]]
 
-%Reglas
+% Reglas
+cuenta_elementos([],0).
+cuenta_elementos([_|L],N):- cuenta_elementos(L,Tam), N is Tam+1.
+
+is_file([Nombre|Contenido]):-
+    cuenta_elementos([Nombre|Contenido],2),
+    string(Nombre),
+    Contenido=[Cabeza|_],
+    string(Cabeza).
+
+esListaArchivos([]).
+esListaArchivos([Cabeza|Cola]):-
+    is_list(Cabeza),
+    is_file(Cabeza),
+    esListaArchivos(Cola).
+
+is_commit([Mensaje|Archivos]):-
+    cuenta_elementos([Mensaje|Archivos],2),
+    string(Mensaje),
+    Archivos=[ArchivosAux|_],
+    esListaArchivos(ArchivosAux).
+esListaCommits([]).
+esListaCommits([Cabeza|Cola]):-
+    is_list(Cabeza),
+    is_commit(Cabeza),
+    esListaCommits(Cola).
+
 %Constructor de zonas
 zonasCons(Nombre,Autor,Fecha,WS,I,LR,RR,Zonas):-
     string(Nombre),
     string(Autor),
-    get_time(Segundos),
-    convert_time(Segundos,Fecha),
+    string(Fecha),
+    esListaArchivos(WS),
+    esListaArchivos(I),
+    esListaCommits(LR), esListaCommits(RR),
     Zonas=[Nombre,Autor,Fecha,WS,I,LR,RR].
+
+%Predicado de Pertenencia
+esRepoZonas(Repo):-
+    is_list(Repo),
+    cuenta_elementos(Repo,7),
+    Repo=[Nombre,Autor,Fecha,WS,Index,LR,RR],
+    string(Nombre),
+    string(Autor),
+    string(Fecha),
+    esListaArchivos(WS),
+    esListaArchivos(Index),
+    esListaCommits(LR),
+    esListaCommits(RR).
+
 %Selectores
-nombreSel(Zonas,NombreRepo):-Zonas=[NombreRepo,_,_,_,_,_,_].
-autorSel(Zonas,Autor):-Zonas=[_,Autor,_,_,_,_,_].
-fechaSel(Zonas,Fecha):-Zonas=[_,_,Fecha,_,_,_,_].
-workspaceSel(Zonas,WS):-Zonas=[_,_,_,WS,_,_,_].
-indexSel(Zonas,Index):-Zonas=[_,_,_,_,Index,_,_].
-localRSel(Zonas,LR):-Zonas=[_,_,_,_,_,LR,_].
-remoteRSel(Zonas,RR):-Zonas=[_,_,_,_,_,_,RR].
+nombreSel(Zonas,NombreRepo):-esRepoZonas(Zonas),Zonas=[NombreRepo,_,_,_,_,_,_].
+autorSel(Zonas,Autor):-esRepoZonas(Zonas),Zonas=[_,Autor,_,_,_,_,_].
+fechaSel(Zonas,Fecha):-esRepoZonas(Zonas),Zonas=[_,_,Fecha,_,_,_,_].
+workspaceSel(Zonas,WS):-esRepoZonas(Zonas),Zonas=[_,_,_,WS,_,_,_].
+indexSel(Zonas,Index):-esRepoZonas(Zonas),Zonas=[_,_,_,_,Index,_,_].
+localRSel(Zonas,LR):-esRepoZonas(Zonas),Zonas=[_,_,_,_,_,LR,_].
+remoteRSel(Zonas,RR):-esRepoZonas(Zonas),Zonas=[_,_,_,_,_,_,RR].
 
 %Modificadores
-/*setIndex(Nombre,Autor,Fecha,WS,NewIndex,LR,RR,Zonas):-nombreRepo(Nombre),
-                                     autor(Autor),
-                                     get_time(Segundos),
-                                     convert_time(Segundos,Fecha),
-                                     workspace(WS),
-                                     is_list(NewIndex),
-                                     localR(LR),
-                                     remoteR(RR),
-                                     Zonas=[Nombre,Autor,Fecha,WS,NewIndex,LR,RR].*/
+setWorkspace(Zonas,NewWS,NuevaZona):-
+    esRepoZonas(Zonas),esListaArchivos(NewWS),
+    nombreSel(Zonas,Nombre),
+    autorSel(Zonas,Autor),
+    fechaSel(Zonas,Fecha),
+    indexSel(Zonas,Index),
+    localRSel(Zonas,LR),
+    remoteRSel(Zonas,RR),
+    zonasCons(Nombre,Autor,Fecha,NewWS,Index,LR,RR,NuevaZona).
 
-/*setLocalR(Nombre,Autor,Fecha,WS,I,NewLR,RR,Zonas):-nombreRepo(Nombre),
-                                     autor(Autor),
-                                     get_time(Segundos),
-                                     convert_time(Segundos,Fecha),
-                                     workspace(WS),
-                                     indexx(I),
-                                     is_list(NewLR),
-                                     remoteR(RR),
-                                     Zonas=[Nombre,Autor,Fecha,WS,I,NewLR,RR].*/
 setIndex(Zonas,NewIndex,NuevaZona):-
+    esRepoZonas(Zonas),esListaArchivos(NewIndex),
     nombreSel(Zonas,Nombre),
     autorSel(Zonas,Autor),
     fechaSel(Zonas,Fecha),
@@ -75,7 +111,9 @@ setIndex(Zonas,NewIndex,NuevaZona):-
     localRSel(Zonas,LR),
     remoteRSel(Zonas,RR),
     zonasCons(Nombre,Autor,Fecha,WS,NewIndex,LR,RR,NuevaZona).
+
 setLocalR(Zonas,NewLR,NuevaZona):-
+    esRepoZonas(Zonas),esListaCommits(NewLR),
     nombreSel(Zonas,Nombre),
     autorSel(Zonas,Autor),
     fechaSel(Zonas,Fecha),
@@ -83,6 +121,17 @@ setLocalR(Zonas,NewLR,NuevaZona):-
     indexSel(Zonas,Index),
     remoteRSel(Zonas,RR),
     zonasCons(Nombre,Autor,Fecha,WS,Index,NewLR,RR,NuevaZona).
+
+setRemoteR(Zonas,NewRR,NuevaZona):-
+    esRepoZonas(Zonas),esListaCommits(NewRR),
+    nombreSel(Zonas,Nombre),
+    autorSel(Zonas,Autor),
+    fechaSel(Zonas,Fecha),
+    workspaceSel(Zonas,WS),
+    indexSel(Zonas,Index),
+    localRSel(Zonas,LR),
+    zonasCons(Nombre,Autor,Fecha,WS,Index,LR,NewRR,NuevaZona).
+
 
 
 

@@ -8,7 +8,18 @@ gitInit(NombreRepo,Autor,RepoOutput):-
     indexx(Index),
     localR(LR),
     remoteR(RR),
-    zonasCons(NombreRepo,Autor,_,WS,Index,LR,RR,RepoOutput).
+    get_time(Segundos),
+    convert_time(Segundos,Fecha),
+    zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,RepoOutput).
+
+/********* AGREGAR ARCHIVOS AL WS **********/
+%predicado que agrega archivos al Workspace
+llenarWorkspace(RepoInput,Archivos,RepoOutput):-
+    esRepoZonas(RepoInput),
+    esListaArchivos(Archivos),
+    workspaceSel(RepoInput,WS),
+    concatenar(Archivos,WS,NuevoWorkspace),
+    setWorkspace(RepoInput,NuevoWorkspace,RepoOutput).
 
 /*********** GIT ADD *******************/
 
@@ -29,28 +40,27 @@ deleteDup([], []).
 deleteDup([Elemento|Lista], [Elemento|Lista3]) :- subtract(Lista, [Elemento], Lista2), deleteDup(Lista2, Lista3).
 % En Output se guardan los archivos que que están dentro el Workspace,
 % sin repetir
-gitAddAux(_,[],_,Movidos,Movidos):-!.
-gitAddAux(RepoInput,[Cabeza|Cola],WS,Salida,Output):-
-    is_list(RepoInput),
+gitAddAux(_,[],Movidos,Movidos):-!.
+gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
+    esRepoZonas(RepoInput),
     workspaceSel(RepoInput,WS),
     miembroWorkspace(WS,Cabeza,Archivo),
     agregarArchivo(Archivo,Salida,Movidos),
     deleteDup(Movidos,Movidos2),
-    gitAddAux(RepoInput,Cola,WS,Movidos2,Output).
-%gitAdd(Zonas,["file2","file1","file1"],WS,[],Movidos).
+    gitAddAux(RepoInput,Cola,Movidos2,Output).
+%gitAddAux(Zonas,["file2","file1","file1"],[],Movidos).
 
-%Entrega una nueva versión de Zonas con el Index modificado
-nuevoIndex(RepoInput,Index,[Cabeza|Cola],Movidos,NuevoIndex,NuevaZona):-
-    indexSel(RepoInput,Index),
-    gitAddAux(RepoInput,[Cabeza|Cola],_,[],Movidos),
-    concatenar(Index,Movidos,NuevoIndex),
-    setIndex(RepoInput,NuevoIndex,NuevaZona).
-%nuevoIndex(Index,["file1","file2","file2"],Movidos,Nuevo,Zonas).
-
+esListaStrings([]).
+esListaStrings([Cabeza|Cola]):-
+    string(Cabeza),
+    esListaStrings(Cola).
 gitAdd(RepoInput,Archivos,RepoOutput):-
-    is_list(RepoInput),
-    is_list(Archivos), %se verifica que los archivos ingresados correspondan a una lista
-    nuevoIndex(RepoInput,_,Archivos,_,_,RepoOutput).
+    esRepoZonas(RepoInput),
+    esListaStrings(Archivos), %se verifica que los archivos ingresados correspondan a una lista
+    indexSel(RepoInput,Index),
+    gitAddAux(RepoInput,Archivos,[],Movidos),
+    concatenar(Movidos,Index,NuevoIndex),
+    setIndex(RepoInput,NuevoIndex,RepoOutput).
 %gitAdd(RepoInput,["file1","file1","file2"],RepoOutput).
 
 /************** GIT COMMIT ***********************/
@@ -60,23 +70,28 @@ gitAdd(RepoInput,Archivos,RepoOutput):-
 nuevoLocalR(RepoInput,_,_,[],_,RepoInput):-!,write("No hay cambios en el index").
 nuevoLocalR(RepoInput,LocalR,Mensaje,Cambios,NuevoLocalR,NuevaZona2):-
     localRSel(RepoInput,LocalR), %se obtiene el local repository
-    commitCons(_,Mensaje,Cambios,Commit), %se crea un commit en base a la fecha, mensaje y cambios
+    commitCons(Mensaje,Cambios,Commit), %se crea un commit en base a la fecha, mensaje y cambios
     agregarArchivo(Commit,LocalR,NuevoLocalR), %se agrega el commit al local repository
     setLocalR(RepoInput,NuevoLocalR,NuevaZona), %se modifica el local repository
     setIndex(NuevaZona,[],NuevaZona2). %se modifica el index, quedando vacío
 
 gitCommit(RepoInput,Mensaje,RepoOutput):-
-    is_list(RepoInput),
+    esRepoZonas(RepoInput),
     string(Mensaje), %se verifica que el mensaje sea un string
     indexSel(RepoInput,Cambios), %se obtiene el index, que corresponde a los cambios
-    nuevoLocalR(RepoInput,_,Mensaje,Cambios,_,RepoOutput). %se modifica el local repository, quedando una nueva zona en RepoOutput
+    localRSel(RepoInput,LocalR), %se obtiene el local repository
+    commitCons(Mensaje,Cambios,Commit), %se crea un commit en base a la fecha, mensaje y cambios
+    agregarArchivo(Commit,LocalR,NuevoLocalR), %se agrega el commit al local repository
+    setLocalR(RepoInput,NuevoLocalR,NuevaZona), %se modifica el local repository
+    setIndex(NuevaZona,[],RepoOutput). %se modifica el index, quedando vacío
+    %nuevoLocalR(RepoInput,_,Mensaje,Cambios,_,RepoOutput). %se modifica el local repository, quedando una nueva zona en RepoOutput
 
 
 /*gitPush(RepoInput,RepoOutput):-
     zonas(RepoInput).*/
 
-git2String(RepoInput,RepoAstring):-
-    is_list(RepoInput),
+git2String(RepoInput,RepoAsString):-
+    esRepoZonas(RepoInput),
     string_concat("","###### Repositorio '",S1),
     nombreSel(RepoInput,Nombre),
     text_to_string(Nombre,NombreStr),
@@ -89,7 +104,7 @@ git2String(RepoInput,RepoAstring):-
     string_concat(S5,"\nAutor: ",S6),
     autorSel(RepoInput,Autor),
     text_to_string(Autor,AutorStr),
-    string_concat(S6,AutorStr,RepoAstring).
+    string_concat(S6,AutorStr,RepoAsString).
 
 
 

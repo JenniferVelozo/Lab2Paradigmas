@@ -23,12 +23,11 @@
 
 
 %Reglas
-commitCons(Fecha,Mensaje,Cambios,Commit):-
-    get_time(Segundos),convert_time(Segundos,Fecha),
+commitCons(Mensaje,Cambios,Commit):-
     string(Mensaje),
-    is_list(Cambios),
-    Commit=[Fecha,Mensaje,Cambios].
+    esListaArchivos(Cambios),
+    Commit=[Mensaje,Cambios].
 
-commit(Commit):- commitCons(_,_,_,_,Commit).
-mensajeSel(Mensaje):- commitCons(_,_,Mensaje,_,_).
-cambiosSel(Cambios):-commitCons(_,_,_,Cambios,_).
+commit(Commit):- commitCons(_,_,_,Commit).
+mensajeSel(Mensaje):- commitCons(_,Mensaje,_,_).
+cambiosSel(Cambios):-commitCons(_,_,Cambios,_).
