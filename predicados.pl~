@@ -1,6 +1,6 @@
 :-[tdazonas].
 :-[tdacommit].
-
+:-[predicadosGenerales].
 /************** GIT INIT *****************/
 
 gitInit(NombreRepo,Autor,RepoOutput):-
@@ -13,7 +13,7 @@ gitInit(NombreRepo,Autor,RepoOutput):-
     zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,RepoOutput).
 
 /********* AGREGAR ARCHIVOS AL WS **********/
-%predicado que agrega archivos al Workspace
+%Predicado que agrega archivos al Workspace
 llenarWorkspace(RepoInput,Archivos,RepoOutput):-
     esRepoZonas(RepoInput),
     esListaArchivos(Archivos),
@@ -23,40 +23,21 @@ llenarWorkspace(RepoInput,Archivos,RepoOutput):-
 
 /*********** GIT ADD *******************/
 
-% Verifica si un determinado archivo está dentro del Workspace
-miembroWorkspace(WS,Archivo,ConContenido):-buscarArchivo(Archivo,WS,ConContenido).
-buscarArchivo(_,[],[]):-!,fail.
-buscarArchivo(Archivo,[[Archivo|Contenido]|_],[Archivo|Contenido]):-!,true.
-buscarArchivo(Archivo,[_|Cola],[Archivo|Contenido]):-buscarArchivo(Archivo,Cola,[Archivo|Contenido]).
-
-%Agrega un archivo en la cabeza de una lista
-agregarArchivo(Archivo,Lista,[Archivo|Lista]).
-%Concatena 2 listas
-concatenar([],L2,L2).
-concatenar([Cabeza|Cola],L2,[Cabeza|R]):-
-    concatenar(Cola,L2,R).
-%Elimina elementos duplicados
-deleteDup([], []).
-deleteDup([Elemento|Lista], [Elemento|Lista3]) :- subtract(Lista, [Elemento], Lista2), deleteDup(Lista2, Lista3).
-% En Output se guardan los archivos que que están dentro el Workspace,
-% sin repetir
+% En Output se guardan los archivos que que están dentro el Workspace,sin repetir
 gitAddAux(_,[],Movidos,Movidos):-!.
 gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
     esRepoZonas(RepoInput),
     workspaceSel(RepoInput,WS),
-    miembroWorkspace(WS,Cabeza,Archivo),
-    agregarArchivo(Archivo,Salida,Movidos),
+    esMiembro(WS,Cabeza,Archivo),
+    agregarElemento(Archivo,Salida,Movidos),
     deleteDup(Movidos,Movidos2),
     gitAddAux(RepoInput,Cola,Movidos2,Output).
 %gitAddAux(Zonas,["file2","file1","file1"],[],Movidos).
 
-esListaStrings([]).
-esListaStrings([Cabeza|Cola]):-
-    string(Cabeza),
-    esListaStrings(Cola).
+
 gitAdd(RepoInput,Archivos,RepoOutput):-
-    esRepoZonas(RepoInput),
-    esListaStrings(Archivos), %se verifica que los archivos ingresados correspondan a una lista
+    esRepoZonas(RepoInput), %verifica que RepoInput corresponda a un repositorio zona
+    esListaStrings(Archivos), %se verifica que la lista ingresada sea una lista de strings
     indexSel(RepoInput,Index),
     gitAddAux(RepoInput,Archivos,[],Movidos),
     concatenar(Movidos,Index,NuevoIndex),
@@ -71,7 +52,7 @@ nuevoLocalR(RepoInput,_,_,[],_,RepoInput):-!,write("No hay cambios en el index")
 nuevoLocalR(RepoInput,LocalR,Mensaje,Cambios,NuevoLocalR,NuevaZona2):-
     localRSel(RepoInput,LocalR), %se obtiene el local repository
     commitCons(Mensaje,Cambios,Commit), %se crea un commit en base a la fecha, mensaje y cambios
-    agregarArchivo(Commit,LocalR,NuevoLocalR), %se agrega el commit al local repository
+    agregarElemento(Commit,LocalR,NuevoLocalR), %se agrega el commit al local repository
     setLocalR(RepoInput,NuevoLocalR,NuevaZona), %se modifica el local repository
     setIndex(NuevaZona,[],NuevaZona2). %se modifica el index, quedando vacío
 
@@ -83,7 +64,7 @@ gitCommit(RepoInput,Mensaje,RepoOutput):-
 
 
 /*gitPush(RepoInput,RepoOutput):-
-    zonas(RepoInput).*/
+    esRepoZonas(RepoInput).*/
 
 /******************** GIT 2 STRING **********************/
 

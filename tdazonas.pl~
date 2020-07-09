@@ -1,75 +1,91 @@
+:-[predicadosGenerales].
 %Dominios
-%NombreRepositorio = symbol; string
-%ListaArchivos = lista
+%NombreRepo = string
+%Autor = string
+%Fecha = string
+%WS = lista de archivos
+%Index = lista de archivos
+%LR = lista de commits
+%RR = lista de commits
+%Repo = lista de 7 elementos con el NombreRepo,Autor,Fecha,WS,Index,LR, RR
+%NuevoRepo = lista de 7 elementos con el NombreRepo,Autor,Fecha,WS,Index,LR,RR
+%NewWS = lista de archivos
+%NewIndex = lista de archivos
+%NewLR = lista de commits
+%NewRR = lista de commits
 
 %Predicados
-%nombreRep(NombreRepositorio). aridad=1
-%workspace(ListaArchivos). aridad=1
-%index(ListaArchivos). aridad=1
-%localR(ListaArchivos). aridad=1
-%remoteR(ListaArchivos). aridad=1
-%zonas(NombreRepositorio,Fecha,Hora,WS,I,LR,RR). aridad=7
+%zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo).
+%esRepoZonas(Repo).
+%nombreSel(Repo,NombreRepo)
+%autorSel(Repo,Autor).
+%fechaSel(Repo,Fecha).
+%workspaceSel(Repo,WS).
+%indexSel(Repo,Index).
+%localRSel(Repo,LR).
+%remoteRSel(Repo,RR).
+%setWorkspace(Repo,NewWS,NuevoRepo).
+%setIndex(Repo,NewIndex,NuevoRepo).
+%setLocalR(Repo,NewLR,NuevoRepo).
+%setRemoteR(Repo,NewRR,NuevoRepo).
 
 %Metas
 %Primarias
-%zonas(Nombre,Fecha,Hora,WS,I,LR,RR).
+%zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo).
+%esRepoZonas(Repo).
 
 %Secundarias
-%workspace(ListaArchivos).
-%index(ListaArchivos).
-%localR(ListaArchivos).
-%remoteR(ListaArchivos).
+%nombreSel(Repo,NombreRepo)
+%autorSel(Repo,Autor).
+%fechaSel(Repo,Fecha).
+%workspaceSel(Repo,WS).
+%indexSel(Repo,Index).
+%localRSel(Repo,LR).
+%remoteRSel(Repo,RR).
+%setWorkspace(Repo,NewWS,NuevoRepo).
+%setIndex(Repo,NewIndex,NuevoRepo).
+%setLocalR(Repo,NewLR,NuevoRepo).
+%setRemoteR(Repo,NewRR,NuevoRepo).
 
 
 %Clausulas de Horn
 %Hechos
-workspace([["arch.rkt","sdd"]]).
-indexx([["ssd.c","sds"]]).
+workspace([]).
+indexx([]).
 localR([]).
 remoteR([]).
-% formato workspace e index[["file","contenido],["file2","contenido2"]]
+%formato workspace e index:
+% [["file","contenido"],["file2","contenido2"]];
 % es una lista que contiene archivos
-% formato LR y RR = una lista con commits=
-% [["mensaje1",[["f1","c1],["f2","c2"]]],["mensaje2",[["arch1","ssd"],["arch2","wssa"]]]]
+%formato LR y RR
+% [["mensaje1",[["f1","c1],["f2","c2"]]],["mensaje2",[["arch1","ssd"],["arch2","asd"]]]];
+% es una lista que contiene commits
+
 
 % Reglas
-cuenta_elementos([],0).
-cuenta_elementos([_|L],N):- cuenta_elementos(L,Tam), N is Tam+1.
-
-is_file([Nombre|Contenido]):-
-    cuenta_elementos([Nombre|Contenido],2),
-    string(Nombre),
-    Contenido=[Cabeza|_],
-    string(Cabeza).
-
-esListaArchivos([]).
-esListaArchivos([Cabeza|Cola]):-
-    is_list(Cabeza),
-    is_file(Cabeza),
-    esListaArchivos(Cola).
-
-is_commit([Mensaje|Archivos]):-
-    cuenta_elementos([Mensaje|Archivos],2),
-    string(Mensaje),
-    Archivos=[ArchivosAux|_],
-    esListaArchivos(ArchivosAux).
-esListaCommits([]).
-esListaCommits([Cabeza|Cola]):-
-    is_list(Cabeza),
-    is_commit(Cabeza),
-    esListaCommits(Cola).
-
 %Constructor de zonas
-zonasCons(Nombre,Autor,Fecha,WS,I,LR,RR,Zonas):-
-    string(Nombre),
-    string(Autor),
-    string(Fecha),
-    esListaArchivos(WS),
-    esListaArchivos(I),
+% Para construir una zona:
+% Las variables Nombre, Autor y Fecha deben ser
+% strings
+% Las variables WS e I deben ser una lista de archivos
+% Las variables LR y RR deben ser una lista de commits
+% En la variable Zonas se crea una lista con los 7 elementos
+zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo):-
+    string(NombreRepo),string(Autor),string(Fecha),
+    esListaArchivos(WS),esListaArchivos(Index),
     esListaCommits(LR), esListaCommits(RR),
-    Zonas=[Nombre,Autor,Fecha,WS,I,LR,RR].
+    Repo=[NombreRepo,Autor,Fecha,WS,Index,LR,RR].
 
-%Predicado de Pertenencia
+% Predicado de Pertenencia
+% Para que el repositorio sea un repositorio zona, debe ser una lista
+% de 7 elementos que cumpla con lo siguiente:
+% Nombre: debe ser un string que representa el
+% nombre del repositorio
+% Autor: debe ser string que representa el autor
+% Fecha: debe ser un string
+% Las zonas Workspace e Index deben ser una lista de archivos
+% Las zonas Local Repository y Remote Repository deben ser una lista de
+% commits
 esRepoZonas(Repo):-
     is_list(Repo),
     cuenta_elementos(Repo,7),
@@ -83,54 +99,62 @@ esRepoZonas(Repo):-
     esListaCommits(RR).
 
 %Selectores
-nombreSel(Zonas,NombreRepo):-esRepoZonas(Zonas),Zonas=[NombreRepo,_,_,_,_,_,_].
-autorSel(Zonas,Autor):-esRepoZonas(Zonas),Zonas=[_,Autor,_,_,_,_,_].
-fechaSel(Zonas,Fecha):-esRepoZonas(Zonas),Zonas=[_,_,Fecha,_,_,_,_].
-workspaceSel(Zonas,WS):-esRepoZonas(Zonas),Zonas=[_,_,_,WS,_,_,_].
-indexSel(Zonas,Index):-esRepoZonas(Zonas),Zonas=[_,_,_,_,Index,_,_].
-localRSel(Zonas,LR):-esRepoZonas(Zonas),Zonas=[_,_,_,_,_,LR,_].
-remoteRSel(Zonas,RR):-esRepoZonas(Zonas),Zonas=[_,_,_,_,_,_,RR].
+nombreSel(Repo,NombreRepo):-esRepoZonas(Repo),Repo=[NombreRepo,_,_,_,_,_,_].
+autorSel(Repo,Autor):-esRepoZonas(Repo),Repo=[_,Autor,_,_,_,_,_].
+fechaSel(Repo,Fecha):-esRepoZonas(Repo),Repo=[_,_,Fecha,_,_,_,_].
+workspaceSel(Repo,WS):-esRepoZonas(Repo),Repo=[_,_,_,WS,_,_,_].
+indexSel(Repo,Index):-esRepoZonas(Repo),Repo=[_,_,_,_,Index,_,_].
+localRSel(Repo,LR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,LR,_].
+remoteRSel(Repo,RR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,_,RR].
 
 %Modificadores
-setWorkspace(Zonas,NewWS,NuevaZona):-
-    esRepoZonas(Zonas),esListaArchivos(NewWS),
-    nombreSel(Zonas,Nombre),
-    autorSel(Zonas,Autor),
-    fechaSel(Zonas,Fecha),
-    indexSel(Zonas,Index),
-    localRSel(Zonas,LR),
-    remoteRSel(Zonas,RR),
-    zonasCons(Nombre,Autor,Fecha,NewWS,Index,LR,RR,NuevaZona).
+% Predicado que construye un nuevo repositorio zonas, con el Workspace
+% modificado
+setWorkspace(Repo,NewWS,NuevoRepo):-
+    esRepoZonas(Repo),esListaArchivos(NewWS),
+    nombreSel(Repo,Nombre),
+    autorSel(Repo,Autor),
+    fechaSel(Repo,Fecha),
+    indexSel(Repo,Index),
+    localRSel(Repo,LR),
+    remoteRSel(Repo,RR),
+    zonasCons(Nombre,Autor,Fecha,NewWS,Index,LR,RR,NuevoRepo).
 
-setIndex(Zonas,NewIndex,NuevaZona):-
-    esRepoZonas(Zonas),esListaArchivos(NewIndex),
-    nombreSel(Zonas,Nombre),
-    autorSel(Zonas,Autor),
-    fechaSel(Zonas,Fecha),
-    workspaceSel(Zonas,WS),
-    localRSel(Zonas,LR),
-    remoteRSel(Zonas,RR),
-    zonasCons(Nombre,Autor,Fecha,WS,NewIndex,LR,RR,NuevaZona).
+% Predicado que construye un nuevo repositorio zonas, con el Index
+% modificado
+setIndex(Repo,NewIndex,NuevoRepo):-
+    esRepoZonas(Repo),esListaArchivos(NewIndex),
+    nombreSel(Repo,Nombre),
+    autorSel(Repo,Autor),
+    fechaSel(Repo,Fecha),
+    workspaceSel(Repo,WS),
+    localRSel(Repo,LR),
+    remoteRSel(Repo,RR),
+    zonasCons(Nombre,Autor,Fecha,WS,NewIndex,LR,RR,NuevoRepo).
 
-setLocalR(Zonas,NewLR,NuevaZona):-
-    esRepoZonas(Zonas),esListaCommits(NewLR),
-    nombreSel(Zonas,Nombre),
-    autorSel(Zonas,Autor),
-    fechaSel(Zonas,Fecha),
-    workspaceSel(Zonas,WS),
-    indexSel(Zonas,Index),
-    remoteRSel(Zonas,RR),
-    zonasCons(Nombre,Autor,Fecha,WS,Index,NewLR,RR,NuevaZona).
+% Predicado que construye un nuevo repositorio zonas, con el Local
+% Repository modificado
+setLocalR(Repo,NewLR,NuevoRepo):-
+    esRepoZonas(Repo),esListaCommits(NewLR),
+    nombreSel(Repo,Nombre),
+    autorSel(Repo,Autor),
+    fechaSel(Repo,Fecha),
+    workspaceSel(Repo,WS),
+    indexSel(Repo,Index),
+    remoteRSel(Repo,RR),
+    zonasCons(Nombre,Autor,Fecha,WS,Index,NewLR,RR,NuevoRepo).
 
-setRemoteR(Zonas,NewRR,NuevaZona):-
-    esRepoZonas(Zonas),esListaCommits(NewRR),
-    nombreSel(Zonas,Nombre),
-    autorSel(Zonas,Autor),
-    fechaSel(Zonas,Fecha),
-    workspaceSel(Zonas,WS),
-    indexSel(Zonas,Index),
-    localRSel(Zonas,LR),
-    zonasCons(Nombre,Autor,Fecha,WS,Index,LR,NewRR,NuevaZona).
+% Predicado que construye un nuevo repositorio zonas, con el Remote
+% Repository modificado
+setRemoteR(Repo,NewRR,NuevoRepo):-
+    esRepoZonas(Repo),esListaCommits(NewRR),
+    nombreSel(Repo,Nombre),
+    autorSel(Repo,Autor),
+    fechaSel(Repo,Fecha),
+    workspaceSel(Repo,WS),
+    indexSel(Repo,Index),
+    localRSel(Repo,LR),
+    zonasCons(Nombre,Autor,Fecha,WS,Index,LR,NewRR,NuevoRepo).
 
 
 

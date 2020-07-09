@@ -28,6 +28,6 @@ commitCons(Mensaje,Cambios,Commit):-
     esListaArchivos(Cambios),
     Commit=[Mensaje,Cambios].
 
-commit(Commit):- commitCons(_,_,_,Commit).
-mensajeSel(Mensaje):- commitCons(_,Mensaje,_,_).
-cambiosSel(Cambios):-commitCons(_,_,Cambios,_).
+commit(Commit):- commitCons(_,_,Commit).
+mensajeSel(Mensaje):- commitCons(Mensaje,_,_).
+cambiosSel(Cambios):-commitCons(_,Cambios,_).
