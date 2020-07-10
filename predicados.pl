@@ -62,9 +62,18 @@ gitCommit(RepoInput,Mensaje,RepoOutput):-
     indexSel(RepoInput,Cambios), %se obtiene el index, que corresponde a los cambios
     nuevoLocalR(RepoInput,_,Mensaje,Cambios,_,RepoOutput). %se modifica el local repository, quedando una nueva zona en RepoOutput
 
+/*************** GIT PUSH ************/
+nuevoRemoteR(RepoInput,_,_,[],_,RepoInput):-!,write("No hay commits en el Local Repository").
+nuevoRemoteR(RepoInput,Movidos,RemoteR,LocalR,NuevoRemoteR,NuevaZona):-
+    remoteRSel(RepoInput,RemoteR),
+    concatenar(Movidos,LocalR,Movidos2),
+    concatenar(Movidos2,RemoteR,NuevoRemoteR),
+    setRemoteR(RepoInput,NuevoRemoteR,NuevaZona).
 
-/*gitPush(RepoInput,RepoOutput):-
-    esRepoZonas(RepoInput).*/
+gitPush(RepoInput,RepoOutput):-
+    esRepoZonas(RepoInput),
+    localRSel(RepoInput,LR),
+    nuevoRemoteR(RepoInput,[],_,LR,_,RepoOutput).
 
 /******************** GIT 2 STRING **********************/
 
@@ -80,7 +89,7 @@ commit_to_string(Commit,String):-
     esCommit(Commit),
     mensajeSel(Commit,Mensaje),
     text_to_string(Mensaje,MsjStr),
-    string_concat("Mensaje: ",MsjStr,Str),
+    string_concat("   Mensaje: ",MsjStr,Str),
     cambiosSel(Commit,Cambios),
     wsAndIndex_to_string(Cambios,"\n",Str2),
     string_concat(Str,Str2,String).
@@ -93,8 +102,8 @@ lRAndRR_to_string([Commit|Cola],Final,StringFinal):-
 
 git2String(RepoInput,RepoAsString):-
     esRepoZonas(RepoInput),
-    string_concat("","###### Repositorio '",S1),nombreSel(RepoInput,Nombre),
-    text_to_string(Nombre,NombreStr),string_concat(S1,NombreStr,S2),string_concat(S2,"' ######\n",S3),
+    string_concat("","#################    REPOSITORIO '",S1),nombreSel(RepoInput,Nombre),
+    text_to_string(Nombre,NombreStr),string_concat(S1,NombreStr,S2),string_concat(S2,"'    ##################\n",S3),
 
     string_concat(S3,"Fecha de creación: ",S4),
     fechaSel(RepoInput,Fecha),

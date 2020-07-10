@@ -1,14 +1,14 @@
 :-[predicadosGenerales].
 %Dominios
-%NombreRepo = string
-%Autor = string
-%Fecha = string
+%NombreRepo = string que representa el nombre del repositorio
+%Autor = string que representa el autor del repositorio
+%Fecha = string que representa la fecha de creación del repositorio
 %WS = lista de archivos
 %Index = lista de archivos
 %LR = lista de commits
 %RR = lista de commits
-%Repo = lista de 7 elementos con el NombreRepo,Autor,Fecha,WS,Index,LR, RR
-%NuevoRepo = lista de 7 elementos con el NombreRepo,Autor,Fecha,WS,Index,LR,RR
+%Repo = lista de 7 elementos: NombreRepo,Autor,Fecha,WS,Index,LR, RR
+%NuevoRepo = lista de 7 elementos:NombreRepo,Autor,Fecha,WS,Index,LR,RR
 %NewWS = lista de archivos
 %NewIndex = lista de archivos
 %NewLR = lista de commits
@@ -53,7 +53,7 @@
 workspace([]).
 indexx([]).
 localR([]).
-remoteR([]).
+remoteR([["mensaje",[["file.c","sdds"],["s.rkt","sd"]]]]).
 %formato workspace e index:
 % [["file","contenido"],["file2","contenido2"]];
 % es una lista que contiene archivos
@@ -63,13 +63,8 @@ remoteR([]).
 
 
 % Reglas
-%Constructor de zonas
-% Para construir una zona:
-% Las variables Nombre, Autor y Fecha deben ser
-% strings
-% Las variables WS e I deben ser una lista de archivos
-% Las variables LR y RR deben ser una lista de commits
-% En la variable Zonas se crea una lista con los 7 elementos
+% Constructor de repositorio
+% En la variable Repo se crea una lista con los 7 elementos
 zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo):-
     string(NombreRepo),string(Autor),string(Fecha),
     esListaArchivos(WS),esListaArchivos(Index),
@@ -77,15 +72,7 @@ zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo):-
     Repo=[NombreRepo,Autor,Fecha,WS,Index,LR,RR].
 
 % Predicado de Pertenencia
-% Para que el repositorio sea un repositorio zona, debe ser una lista
-% de 7 elementos que cumpla con lo siguiente:
-% Nombre: debe ser un string que representa el
-% nombre del repositorio
-% Autor: debe ser string que representa el autor
-% Fecha: debe ser un string
-% Las zonas Workspace e Index deben ser una lista de archivos
-% Las zonas Local Repository y Remote Repository deben ser una lista de
-% commits
+% Verifica si la variable Repo corresponde a un repositorio
 esRepoZonas(Repo):-
     is_list(Repo),
     cuenta_elementos(Repo,7),
@@ -108,7 +95,7 @@ localRSel(Repo,LR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,LR,_].
 remoteRSel(Repo,RR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,_,RR].
 
 %Modificadores
-% Predicado que construye un nuevo repositorio zonas, con el Workspace
+% Predicado que construye un nuevo repositorio, con el Workspace
 % modificado
 setWorkspace(Repo,NewWS,NuevoRepo):-
     esRepoZonas(Repo),esListaArchivos(NewWS),
@@ -120,7 +107,7 @@ setWorkspace(Repo,NewWS,NuevoRepo):-
     remoteRSel(Repo,RR),
     zonasCons(Nombre,Autor,Fecha,NewWS,Index,LR,RR,NuevoRepo).
 
-% Predicado que construye un nuevo repositorio zonas, con el Index
+% Predicado que construye un nuevo repositorio, con el Index
 % modificado
 setIndex(Repo,NewIndex,NuevoRepo):-
     esRepoZonas(Repo),esListaArchivos(NewIndex),
@@ -132,7 +119,7 @@ setIndex(Repo,NewIndex,NuevoRepo):-
     remoteRSel(Repo,RR),
     zonasCons(Nombre,Autor,Fecha,WS,NewIndex,LR,RR,NuevoRepo).
 
-% Predicado que construye un nuevo repositorio zonas, con el Local
+% Predicado que construye un nuevo repositorio, con el Local
 % Repository modificado
 setLocalR(Repo,NewLR,NuevoRepo):-
     esRepoZonas(Repo),esListaCommits(NewLR),
@@ -144,7 +131,7 @@ setLocalR(Repo,NewLR,NuevoRepo):-
     remoteRSel(Repo,RR),
     zonasCons(Nombre,Autor,Fecha,WS,Index,NewLR,RR,NuevoRepo).
 
-% Predicado que construye un nuevo repositorio zonas, con el Remote
+% Predicado que construye un nuevo repositorio, con el Remote
 % Repository modificado
 setRemoteR(Repo,NewRR,NuevoRepo):-
     esRepoZonas(Repo),esListaCommits(NewRR),

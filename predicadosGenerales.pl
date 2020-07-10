@@ -2,7 +2,7 @@
 %ListaArchivos = lista de archivos
 %ListaCommits = lista de commits
 %Lista = lista
-%Cantidad = numero
+%Cantidad = numero que representa la cantidad de elementos de una lista
 %Archivo = lista de 2 elementos, donde ambos son un string
 %Commit = lista de 2 elementos, donde el primero es un string y el
 %segundo es una lista de archivos
@@ -32,6 +32,7 @@
 
 %Secundarias
 %cuenta_elementos(Lista,Cantidad).
+%buscarArchivo(NombreArchivo,ListaArchivos,Archivo).
 %is_file(Archivo).
 %deleteDup(Lista,Lista).
 %esListaStrings(Lista).

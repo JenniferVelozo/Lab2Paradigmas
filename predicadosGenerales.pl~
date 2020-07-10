@@ -14,7 +14,6 @@
 %esListaCommits(ListaCommits).
 %cuenta_elementos(Lista,Cantidad).
 %is_file(Archivo).
-%is_commit(Commit).
 %esMiembro(Lista,Archivo,ConContenido).
 %buscarArchivo(NombreArchivo,ListaArchivos,Archivo).
 %agregarElemento(Elemento,Lista,Lista).
@@ -34,7 +33,6 @@
 %Secundarias
 %cuenta_elementos(Lista,Cantidad).
 %is_file(Archivo).
-%is_commit(Commit).
 %deleteDup(Lista,Lista).
 %esListaStrings(Lista).
 

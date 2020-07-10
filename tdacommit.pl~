@@ -1,3 +1,4 @@
+:-[predicadosGenerales].
 %Dominios
 %Nombre = symbol; string
 %Mensaje = symbol; string
@@ -19,15 +20,24 @@
 %cambios(ListaArchivos).
 
 %Clausulas de Horn
-%Hechos
-
-
 %Reglas
+%Constructor de commit
 commitCons(Mensaje,Cambios,Commit):-
     string(Mensaje),
     esListaArchivos(Cambios),
     Commit=[Mensaje,Cambios].
 
-commit(Commit):- commitCons(_,_,Commit).
-mensajeSel(Mensaje):- commitCons(Mensaje,_,_).
-cambiosSel(Cambios):-commitCons(_,Cambios,_).
+%Predicado de pertenencia
+%Predicado que verifica si un elemento corresponde a un commit
+esCommit(Commit):-
+    is_list(Commit),
+    cuenta_elementos(Commit,2),
+    Commit=[Mensaje,Cambios],
+    string(Mensaje),
+    esListaArchivos(Cambios).
+
+%Selectores
+mensajeSel(Commit,Mensaje):- esCommit(Commit),Commit=[Mensaje,_].
+cambiosSel(Commit,Cambios):- esCommit(Commit),Commit=[_,Cambios].
+
+

@@ -1,14 +1,14 @@
 :-[predicadosGenerales].
 %Dominios
-%NombreRepo = string
-%Autor = string
-%Fecha = string
+%NombreRepo = string que representa el nombre del repositorio
+%Autor = string que representa el autor del repositorio
+%Fecha = string que representa la fecha de creación del repositorio
 %WS = lista de archivos
 %Index = lista de archivos
 %LR = lista de commits
 %RR = lista de commits
-%Repo = lista de 7 elementos con el NombreRepo,Autor,Fecha,WS,Index,LR, RR
-%NuevoRepo = lista de 7 elementos con el NombreRepo,Autor,Fecha,WS,Index,LR,RR
+%Repo = lista de 7 elementos: NombreRepo,Autor,Fecha,WS,Index,LR, RR
+%NuevoRepo = lista de 7 elementos:NombreRepo,Autor,Fecha,WS,Index,LR,RR
 %NewWS = lista de archivos
 %NewIndex = lista de archivos
 %NewLR = lista de commits
@@ -54,6 +54,7 @@ workspace([]).
 indexx([]).
 localR([]).
 remoteR([]).
+%[["mensaje",[["file.c","sdds"],["s.rkt","sd"]]]]
 %formato workspace e index:
 % [["file","contenido"],["file2","contenido2"]];
 % es una lista que contiene archivos

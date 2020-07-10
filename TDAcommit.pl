@@ -1,23 +1,24 @@
 :-[predicadosGenerales].
 %Dominios
-%Nombre = symbol; string
-%Mensaje = symbol; string
-%ListaArchivos = lista
+%Mensaje = string que representa en mensaje descriptivo del commit
+%Cambios = lista de archivos
+%Commit = lista de 2 elementos, donde el primero corresponde al mensaje
+%y el segundo es una lista de archivos
 
 %Predicados
-%commit(A,Fecha,Hora,M,C). aridad = 5
-%autor(Nombre). aridad = 1
-%mensaje(Mensaje). aridad = 1
-%cambios(ListaArchivos). aridad = 1
+%commitCons(Mensaje,Cambios,Commit).
+%esCommit(Commit).
+%mensajeSel(Commit,Mensaje).
+%cambiosSel(Commit,Cambios).
 
 %Metas
 %Primarias
-%commit(A,Fecha,Hora,M,C) aridad = 5
+%commitCons(Mensaje,Cambios,Commit).
 
 %Secundarias
-%autor(Nombre).
-%mensaje(Mensaje).
-%cambios(ListaArchivos).
+%esCommit(Commit).
+%mensajeSel(Commit,Mensaje).
+%cambiosSel(Commit,Cambios).
 
 %Clausulas de Horn
 %Reglas
