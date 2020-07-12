@@ -1,5 +1,11 @@
 :-[predicadosGenerales].
-%Dominios
+%Representación de un repositorio:
+%es una lista de 7 elementos, de la siguiente manera
+%[NombreRepo,Autor,Fecha,Workspace,Index,LocalRepository, RemoteRepository]
+%Representación de un commit: [Mensaje,Cambios]
+%Representación de un archivo: ["archivo","contenido"]
+
+%%Dominios
 %NombreRepo = string que representa el nombre del repositorio
 %Autor = string que representa el autor del repositorio
 %Fecha = string que representa la fecha de creación del repositorio
@@ -7,8 +13,10 @@
 %Index = lista de archivos
 %LR = lista de commits
 %RR = lista de commits
-%Repo = lista de 7 elementos: NombreRepo,Autor,Fecha,WS,Index,LR, RR
-%NuevoRepo = lista de 7 elementos:NombreRepo,Autor,Fecha,WS,Index,LR,RR
+%Repo = lista de 7 elementos que representa el repositorio:
+% [NombreRepo,Autor,Fecha,WS,Index,LR, RR]
+%NuevoRepo = lista de 7 elementos que representa un nuevo repositorio:
+% NombreRepo,Autor,Fecha,WS,Index,LR,RR
 %NewWS = lista de archivos
 %NewIndex = lista de archivos
 %NewLR = lista de commits
@@ -28,6 +36,11 @@
 %setIndex(Repo,NewIndex,NuevoRepo).
 %setLocalR(Repo,NewLR,NuevoRepo).
 %setRemoteR(Repo,NewRR,NuevoRepo).
+%workspace(WS).
+%indexx(Index).
+%localR(LR).
+%remoteR(RR).
+
 
 %Metas
 %Primarias
@@ -46,6 +59,11 @@
 %setIndex(Repo,NewIndex,NuevoRepo).
 %setLocalR(Repo,NewLR,NuevoRepo).
 %setRemoteR(Repo,NewRR,NuevoRepo).
+%workspace(WS).
+%indexx(Index).
+%localR(LR).
+%remoteR(RR).
+
 
 
 %Clausulas de Horn
@@ -54,18 +72,14 @@ workspace([]).
 indexx([]).
 localR([]).
 remoteR([]).
-%[["mensaje",[["file.c","sdds"],["s.rkt","sd"]]]]
-%formato workspace e index:
-% [["file","contenido"],["file2","contenido2"]];
-% es una lista que contiene archivos
-%formato LR y RR
-% [["mensaje1",[["f1","c1],["f2","c2"]]],["mensaje2",[["arch1","ssd"],["arch2","asd"]]]];
-% es una lista que contiene commits
-
 
 % Reglas
 % Constructor de repositorio
-% En la variable Repo se crea una lista con los 7 elementos
+% Predicado que permite consultar el valor que debe tomar la variable
+% Repo a partir de 7 entradas
+% Entradas: nombre, autor y fecha de creación del repositorio, zonas
+% de trabajo Workspace, Index, Local Repository y Remote Repository
+% Salida: Repositorio
 repoCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo):-
     string(NombreRepo),string(Autor),string(Fecha),
     esListaArchivos(WS),esListaArchivos(Index),
@@ -74,6 +88,8 @@ repoCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo):-
 
 % Predicado de Pertenencia
 % Verifica si la variable Repo corresponde a un repositorio
+% Entrada: repositorio
+% Salida: true o false
 esRepoZonas(Repo):-
     is_list(Repo),
     cuenta_elementos(Repo,7),
@@ -87,17 +103,53 @@ esRepoZonas(Repo):-
     esListaCommits(RR).
 
 %Selectores
+% Predicado que permite consultar el valor que debe tomar la variable
+% NombreRepo a partir de un repositorio de entrada
+% Entrada: repositorio
+% Salida: nombre del repositorio
 nombreSel(Repo,NombreRepo):-esRepoZonas(Repo),Repo=[NombreRepo,_,_,_,_,_,_].
+
+% Predicado que permite consultar el valor que debe tomar la variable
+% Autor a partir de un repositorio de entrada
+% Entrada: repositorio
+% Salida: autor del repositorio
 autorSel(Repo,Autor):-esRepoZonas(Repo),Repo=[_,Autor,_,_,_,_,_].
+
+% Predicado que permite consultar el valor que debe tomar la variable
+% Fecha a partir de un repositorio de entrada
+% Entrada: repositorio
+% Salida: fecha de creación del repositorio
 fechaSel(Repo,Fecha):-esRepoZonas(Repo),Repo=[_,_,Fecha,_,_,_,_].
+
+% Predicado que permite consultar el valor que debe tomar la variable
+% WS a partir de un repositorio de entrada
+% Entrada: repositorio
+% Salida: zona de trabajo Workspace
 workspaceSel(Repo,WS):-esRepoZonas(Repo),Repo=[_,_,_,WS,_,_,_].
+
+% Predicado que permite consultar el valor que debe tomar la variable
+% Index a partir de un repositorio de entrada
+% Entrada: repositorio
+% Salida: zona de trabajo Index
 indexSel(Repo,Index):-esRepoZonas(Repo),Repo=[_,_,_,_,Index,_,_].
+
+% Predicado que permite consultar el valor que debe tomar la variable
+% LR a partir de un repositorio de entrada
+% Entrada: repositorio
+% Salida: zona de trabajo Local Repository
 localRSel(Repo,LR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,LR,_].
+
+% Predicado que permite consultar el valor que debe tomar la variable
+% RR a partir de un repositorio de entrada
+% Entrada: repositorio
+% Salida: zona de trabajo Local Repository
 remoteRSel(Repo,RR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,_,RR].
 
 %Modificadores
-% Predicado que construye un nuevo repositorio, con el Workspace
-% modificado
+% Predicado que permite consultar el valor que debe tomar la variable
+% NuevoRepo a partir de un repositorio de entrada y un nuevo Workspace
+% Entrada: repositorio, nuevo Workspace
+% Salida: nuevorepositorio con la zona de trabajo Workspace modificada
 setWorkspace(Repo,NewWS,NuevoRepo):-
     esRepoZonas(Repo),esListaArchivos(NewWS),
     nombreSel(Repo,Nombre),
@@ -108,8 +160,10 @@ setWorkspace(Repo,NewWS,NuevoRepo):-
     remoteRSel(Repo,RR),
     repoCons(Nombre,Autor,Fecha,NewWS,Index,LR,RR,NuevoRepo).
 
-% Predicado que construye un nuevo repositorio, con el Index
-% modificado
+% Predicado que permite consultar el valor que debe tomar la variable
+% NuevoRepo a partir de un repositorio de entrada y un nuevo Index
+% Entrada: repositorio, nuevo Index
+% Salida: nuevo repositorio con la zona de trabajo Index modificada
 setIndex(Repo,NewIndex,NuevoRepo):-
     esRepoZonas(Repo),esListaArchivos(NewIndex),
     nombreSel(Repo,Nombre),
@@ -118,10 +172,14 @@ setIndex(Repo,NewIndex,NuevoRepo):-
     workspaceSel(Repo,WS),
     localRSel(Repo,LR),
     remoteRSel(Repo,RR),
-    zonasCons(Nombre,Autor,Fecha,WS,NewIndex,LR,RR,NuevoRepo).
+    repoCons(Nombre,Autor,Fecha,WS,NewIndex,LR,RR,NuevoRepo).
 
-% Predicado que construye un nuevo repositorio, con el Local
-% Repository modificado
+% Predicado que permite consultar el valor que debe tomar la variable
+% NuevoRepo a partir de un repositorio de entrada y un nuevo Local
+% Repository
+% Entrada: repositorio, nuevo Local Repository
+% Salida: nuevo repositorio con la zona de trabajo Local Repository
+% modificada
 setLocalR(Repo,NewLR,NuevoRepo):-
     esRepoZonas(Repo),esListaCommits(NewLR),
     nombreSel(Repo,Nombre),
@@ -130,10 +188,14 @@ setLocalR(Repo,NewLR,NuevoRepo):-
     workspaceSel(Repo,WS),
     indexSel(Repo,Index),
     remoteRSel(Repo,RR),
-    zonasCons(Nombre,Autor,Fecha,WS,Index,NewLR,RR,NuevoRepo).
+    repoCons(Nombre,Autor,Fecha,WS,Index,NewLR,RR,NuevoRepo).
 
-% Predicado que construye un nuevo repositorio, con el Remote
-% Repository modificado
+% Predicado que permite consultar el valor que debe tomar la variable
+% NuevoRepo a partir de un repositorio de entrada y un nuevo Remote
+% Repository
+% Entrada: repositorio, nuevo Local Repository
+% Salida: nuevo repositorio con la zona de trabajo Remote Repository
+% modificada
 setRemoteR(Repo,NewRR,NuevoRepo):-
     esRepoZonas(Repo),esListaCommits(NewRR),
     nombreSel(Repo,Nombre),
@@ -142,7 +204,7 @@ setRemoteR(Repo,NewRR,NuevoRepo):-
     workspaceSel(Repo,WS),
     indexSel(Repo,Index),
     localRSel(Repo,LR),
-    zonasCons(Nombre,Autor,Fecha,WS,Index,LR,NewRR,NuevoRepo).
+    repoCons(Nombre,Autor,Fecha,WS,Index,LR,NewRR,NuevoRepo).
 
 
 

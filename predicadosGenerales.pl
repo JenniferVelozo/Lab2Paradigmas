@@ -38,26 +38,42 @@
 %esListaStrings(Lista).
 
 %Clausulas de Horn
+%Hechos
+cuenta_elementos([],0).
+esListaArchivos([]).
+esListaCommits([]).
+deleteDup([], []).
+concatenar([],L2,L2).
+esListaStrings([]).
+
 %Reglas
 %Predicado que permite obtener el numero de elementos de una lista
-cuenta_elementos([],0).
-cuenta_elementos([_|Lista],Cantidad):- cuenta_elementos(Lista,Tam), Cantidad is Tam+1.
+%Entrada: lista
+%Salida: numero que representa la cantidad de elementos de la lista
+%Tipo de recursión: natural
+cuenta_elementos([_|Lista],Cantidad):-cuenta_elementos(Lista,Tam), Cantidad is Tam+1.
 
 %Predicado que verifica si un elemento corresponde a un archivo
+%Entrada: archivo
+%Salida: true o false
 is_file([Nombre|Contenido]):-
     cuenta_elementos([Nombre|Contenido],2),
     string(Nombre),
     Contenido=[Cabeza|_],
     string(Cabeza).
+
 % Predicado que verifica si un elemento corresponde a una lista de
 % archivos
-esListaArchivos([]).
+% Entrada:lista
+% Salida: true o false
 esListaArchivos([Cabeza|Cola]):-
     is_list(Cabeza),
     is_file(Cabeza),
     esListaArchivos(Cola).
+
 %Predicado que verifica si un elemento correponde a una lista de commits
-esListaCommits([]).
+%Entrada: lista
+%Salida: true o false
 esListaCommits([Cabeza|Cola]):-
     is_list(Cabeza),
     esCommit(Cabeza),
@@ -71,18 +87,26 @@ buscarArchivo(_,[],[]):-!,fail.
 buscarArchivo(Archivo,[[Archivo|Contenido]|_],[Archivo|Contenido]):-!,true.
 buscarArchivo(Archivo,[_|Cola],[Archivo|Contenido]):-buscarArchivo(Archivo,Cola,[Archivo|Contenido]).
 
-%Agrega un elemento en la cabeza de una lista
+%Predicado que permite agregar un elemento en la cabeza de una lista
+%Entrada: elemento y una lista
+%Salida: lista con el elemento agregado en la cabeza de la lista
 agregarElemento(Elemento,Lista,[Elemento|Lista]).
-%Concatena 2 listas
-concatenar([],L2,L2).
+
+%Predicado que permite concatenar 2 listas
+%Entrada: 2 listas
+%Salida: lista (ambas unidas)
 concatenar([Cabeza|Cola],L2,[Cabeza|R]):-
     concatenar(Cola,L2,R).
-%Elimina elementos duplicados
-deleteDup([], []).
+
+%Predicado que permite eliminar elementos duplicados en una lista
+%Entrada:lista
+%Salida: lista (sin elementos duplicados)
 deleteDup([Elemento|Lista], [Elemento|Lista3]) :- subtract(Lista, [Elemento], Lista2), deleteDup(Lista2, Lista3).
 
-%verifica que una lista tenga elementos de tipo string
-esListaStrings([]).
+% Predicado que verifica que una lista tenga elementos de tipo
+% string
+% Entrada: lista
+% Salida: true o false
 esListaStrings([Cabeza|Cola]):-
     string(Cabeza),
     esListaStrings(Cola).

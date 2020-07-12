@@ -2,7 +2,7 @@
 %ListaArchivos = lista de archivos
 %ListaCommits = lista de commits
 %Lista = lista
-%Cantidad = numero
+%Cantidad = numero que representa la cantidad de elementos de una lista
 %Archivo = lista de 2 elementos, donde ambos son un string
 %Commit = lista de 2 elementos, donde el primero es un string y el
 %segundo es una lista de archivos
@@ -32,17 +32,25 @@
 
 %Secundarias
 %cuenta_elementos(Lista,Cantidad).
+%buscarArchivo(NombreArchivo,ListaArchivos,Archivo).
 %is_file(Archivo).
 %deleteDup(Lista,Lista).
 %esListaStrings(Lista).
 
 %Clausulas de Horn
+%Hechos
+cuenta_elementos([],0).
+
 %Reglas
 %Predicado que permite obtener el numero de elementos de una lista
-cuenta_elementos([],0).
-cuenta_elementos([_|Lista],Cantidad):- cuenta_elementos(Lista,Tam), Cantidad is Tam+1.
+%Entrada: lista
+%Salida: numero que representa la cantidad de elementos de la lista
+%Tipo de recursión: natural
+cuenta_elementos([_|Lista],Cantidad):-cuenta_elementos(Lista,Tam), Cantidad is Tam+1.
 
 %Predicado que verifica si un elemento corresponde a un archivo
+%Entrada: archivo
+%Salida: true o false
 is_file([Nombre|Contenido]):-
     cuenta_elementos([Nombre|Contenido],2),
     string(Nombre),
@@ -50,12 +58,15 @@ is_file([Nombre|Contenido]):-
     string(Cabeza).
 % Predicado que verifica si un elemento corresponde a una lista de
 % archivos
+% Entrada:lista
+% Salida: true o false
 esListaArchivos([]).
 esListaArchivos([Cabeza|Cola]):-
     is_list(Cabeza),
     is_file(Cabeza),
     esListaArchivos(Cola).
 %Predicado que verifica si un elemento correponde a una lista de commits
+%Entrada:
 esListaCommits([]).
 esListaCommits([Cabeza|Cola]):-
     is_list(Cabeza),

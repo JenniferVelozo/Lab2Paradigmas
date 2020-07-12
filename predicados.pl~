@@ -10,7 +10,7 @@ gitInit(NombreRepo,Autor,RepoOutput):-
     remoteR(RR),
     get_time(Segundos),
     convert_time(Segundos,Fecha),
-    zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,RepoOutput).
+    repoCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,RepoOutput).
 
 /********* AGREGAR ARCHIVOS AL WS **********/
 %Predicado que agrega archivos al Workspace
@@ -102,7 +102,7 @@ lRAndRR_to_string([Commit|Cola],Final,StringFinal):-
 
 git2String(RepoInput,RepoAsString):-
     esRepoZonas(RepoInput),
-    string_concat("","#################    Repo '",S1),nombreSel(RepoInput,Nombre),
+    string_concat("","#################    REPOSITORIO '",S1),nombreSel(RepoInput,Nombre),
     text_to_string(Nombre,NombreStr),string_concat(S1,NombreStr,S2),string_concat(S2,"'    ##################\n",S3),
 
     string_concat(S3,"Fecha de creación: ",S4),

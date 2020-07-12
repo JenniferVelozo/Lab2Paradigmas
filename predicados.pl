@@ -1,4 +1,4 @@
-:-[tdazonas].
+:-[tdarepositorio].
 :-[tdacommit].
 :-[predicadosGenerales].
 /************** GIT INIT *****************/
@@ -10,7 +10,7 @@ gitInit(NombreRepo,Autor,RepoOutput):-
     remoteR(RR),
     get_time(Segundos),
     convert_time(Segundos,Fecha),
-    zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,RepoOutput).
+    repoCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,RepoOutput).
 
 /********* AGREGAR ARCHIVOS AL WS **********/
 %Predicado que agrega archivos al Workspace
