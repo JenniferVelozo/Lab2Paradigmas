@@ -27,7 +27,10 @@
 %Clausulas de Horn
 %Reglas
 %Constructor de commit
-%Entradas: mensaje descriptivo y los cambios
+%Predicado que permite consultar el valor que debe tomar Commit
+%a partir de un mensaje descriptivo y una lista de archivos
+%Entradas: string que representa un mensaje descriptivo,
+%y una lista de archivos que representa los cambios
 %Salida: una lista de 2 elementos, donde el primero es el mensaje y el
 % segundo es una lista de archivos
 commitCons(Mensaje,Cambios,Commit):-
@@ -50,8 +53,9 @@ esCommit(Commit):-
 % Predicado que permite consultar el valor que debe tomar Mensaje a
 % partir de un commit
 % Entrada: Commit
-% Salida: un string que representa el mensaje descirptivo
+% Salida: un string que representa el mensaje descriptivo
 mensajeSel(Commit,Mensaje):- esCommit(Commit),Commit=[Mensaje,_].
+
 % Predicado que permite consultar el valor que debe tomar Cambios a
 % partir de un commit
 % Entrada: Commit

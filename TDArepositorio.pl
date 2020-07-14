@@ -1,7 +1,7 @@
 :-[predicadosGenerales].
 %Representación de un repositorio:
 %es una lista de 7 elementos, de la siguiente manera
-%[NombreRepo,Autor,Fecha,Workspace,Index,LocalRepository, RemoteRepository]
+%[NombreRepo,Autor,Fecha,Workspace,Index,LocalRepository,RemoteRepository]
 %Representación de un commit: [Mensaje,Cambios]
 %Representación de un archivo: ["archivo","contenido"]
 
@@ -16,7 +16,7 @@
 %Repo = lista de 7 elementos que representa el repositorio:
 % [NombreRepo,Autor,Fecha,WS,Index,LR, RR]
 %NuevoRepo = lista de 7 elementos que representa un nuevo repositorio:
-% NombreRepo,Autor,Fecha,WS,Index,LR,RR
+% [NombreRepo,Autor,Fecha,WS,Index,LR,RR]
 %NewWS = lista de archivos
 %NewIndex = lista de archivos
 %NewLR = lista de commits
@@ -41,7 +41,6 @@
 %localR(LR).
 %remoteR(RR).
 
-
 %Metas
 %Primarias
 %zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo).
@@ -64,10 +63,10 @@
 %localR(LR).
 %remoteR(RR).
 
-
-
 %Clausulas de Horn
 %Hechos
+%Puesto que las zonas de trabajo inician vacías, estos hechos
+%son usado para el predicado gitInit
 workspace([]).
 indexx([]).
 localR([]).
@@ -149,7 +148,7 @@ remoteRSel(Repo,RR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,_,RR].
 % Predicado que permite consultar el valor que debe tomar la variable
 % NuevoRepo a partir de un repositorio de entrada y un nuevo Workspace
 % Entrada: repositorio, nuevo Workspace
-% Salida: nuevorepositorio con la zona de trabajo Workspace modificada
+% Salida: nuevo repositorio con la zona de trabajo Workspace modificada
 setWorkspace(Repo,NewWS,NuevoRepo):-
     esRepoZonas(Repo),esListaArchivos(NewWS),
     nombreSel(Repo,Nombre),

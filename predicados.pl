@@ -2,7 +2,12 @@
 :-[tdacommit].
 :-[predicadosGenerales].
 /************** GIT INIT *****************/
-
+% Predicado que permite consultar el valor que debe tomar RepoOutput a
+% partir de un nombre y autor.
+% Entradas: 2 strings que representan el
+% nombre del repositorio y el autor respectivamente.
+% Salida: un repositorio sin archivos ni commits en sus zonas de
+% trabajo.
 gitInit(NombreRepo,Autor,RepoOutput):-
     workspace(WS),
     indexx(Index),
@@ -13,7 +18,12 @@ gitInit(NombreRepo,Autor,RepoOutput):-
     repoCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,RepoOutput).
 
 /********* AGREGAR ARCHIVOS AL WS **********/
-%Predicado que agrega archivos al Workspace
+% Predicado que permite consultar el valor que debe tomar RepoOutput a
+% partir de un repositorio de entrada RepoInput y una lista de archivos
+% (con contenido).
+% Entrada: repositorio y una lista de archivos
+% Salida: repositorio con la zona de trabajo Workspace modificada, con
+% los archivos agregados en esta.
 llenarWorkspace(RepoInput,Archivos,RepoOutput):-
     esRepoZonas(RepoInput),
     esListaArchivos(Archivos),
@@ -22,8 +32,13 @@ llenarWorkspace(RepoInput,Archivos,RepoOutput):-
     setWorkspace(RepoInput,NuevoWorkspace,RepoOutput).
 
 /*********** GIT ADD *******************/
+% Predicado que permite consultar el valor que debe tomar Output a
+% partir de un repositorio, una lista de archivos y una lista.
+% Entradas: un repositorio, lista de archivos y una lista que se le debe
+% entregar vacía al momento de usar este predicado
+% Salida: una lista de archivos que están en la lista de entrada y en el
+% workspace, sin repetir
 
-% En Output se guardan los archivos que que están dentro el Workspace,sin repetir
 gitAddAux(_,[],Movidos,Movidos):-!.
 gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
     esRepoZonas(RepoInput),
@@ -34,7 +49,9 @@ gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
     gitAddAux(RepoInput,Cola,Movidos2,Output).
 %gitAddAux(Zonas,["file2","file1","file1"],[],Movidos).
 
-
+%Predicado
+%Entradas:
+%Salida:
 gitAdd(RepoInput,Archivos,RepoOutput):-
     esRepoZonas(RepoInput), %verifica que RepoInput corresponda a un repositorio zona
     esListaStrings(Archivos), %se verifica que la lista ingresada sea una lista de strings
@@ -46,21 +63,26 @@ gitAdd(RepoInput,Archivos,RepoOutput):-
 
 /************** GIT COMMIT ***********************/
 
-% si los cambios entregados están vacíos, quiere decir que no hay
-% cambios en el index
-nuevoLocalR(RepoInput,_,_,[],_,RepoInput):-!,write("No hay cambios en el index").
-nuevoLocalR(RepoInput,LocalR,Mensaje,Cambios,NuevoLocalR,NuevaZona2):-
+%Entradas:
+%Salida:
+
+nuevoLocalR(RepoInput,_,_,[],RepoInput):-!,write("No hay cambios en el index").
+nuevoLocalR(RepoInput,LocalR,Mensaje,Cambios,NuevaZona2):-
     localRSel(RepoInput,LocalR), %se obtiene el local repository
     commitCons(Mensaje,Cambios,Commit), %se crea un commit en base a la fecha, mensaje y cambios
     agregarElemento(Commit,LocalR,NuevoLocalR), %se agrega el commit al local repository
     setLocalR(RepoInput,NuevoLocalR,NuevaZona), %se modifica el local repository
     setIndex(NuevaZona,[],NuevaZona2). %se modifica el index, quedando vacío
 
+%Predicado que permite consultar el valor que debe tomar RepoOutput a partir de un repositorio de entrada RepoInput tal que en RepoOutput  hay un commit con los cambios almacenados en index y especificando un mensaje descriptivo (un string) para llevarlos al LocalRepository.
+%Entradas: repositorio y un mensaje descriptivo
+% Salida: repositorio actualizado con el index vacío y el local
+% repository con un commit añadido
 gitCommit(RepoInput,Mensaje,RepoOutput):-
     esRepoZonas(RepoInput),
     string(Mensaje), %se verifica que el mensaje sea un string
     indexSel(RepoInput,Cambios), %se obtiene el index, que corresponde a los cambios
-    nuevoLocalR(RepoInput,_,Mensaje,Cambios,_,RepoOutput). %se modifica el local repository, quedando una nueva zona en RepoOutput
+    nuevoLocalR(RepoInput,_,Mensaje,Cambios,RepoOutput). %se modifica el local repository, quedando una nueva zona en RepoOutput
 
 /*************** GIT PUSH ************/
 nuevoRemoteR(RepoInput,_,_,[],_,RepoInput):-!,write("No hay commits en el Local Repository").
@@ -76,7 +98,11 @@ gitPush(RepoInput,RepoOutput):-
     nuevoRemoteR(RepoInput,[],_,LR,_,RepoOutput).
 
 /******************** GIT 2 STRING **********************/
-
+% Predicado que permite consultar el valor que debe tomar String Final a
+% partir de una lista de archivos y un string
+% Entradas: una lista de archivos y un string
+% Salida: un string que permite visualizar de manera clara el contenido
+% de una lista de archivos
 wsAndIndex_to_string([],R,R):-!.
 wsAndIndex_to_string([Archivo|Cola],Final,StringFinal):-
     atomics_to_string(Archivo,' : ',StringArch),
@@ -85,6 +111,11 @@ wsAndIndex_to_string([Archivo|Cola],Final,StringFinal):-
     string_concat(String2,'\n',String3),
     wsAndIndex_to_string(Cola,String3,StringFinal).
 
+% Predicado que permite consultar el valor que debe tomar String a
+% partir de un commit
+% Entrada: un commit
+% Salida: un string que permite visualizar de manera clara el contenido
+% de un commit
 commit_to_string(Commit,String):-
     esCommit(Commit),
     mensajeSel(Commit,Mensaje),
@@ -94,12 +125,20 @@ commit_to_string(Commit,String):-
     wsAndIndex_to_string(Cambios,"\n",Str2),
     string_concat(Str,Str2,String).
 
+% Predicado que permite consultar el valor que debe tomar StringFinal a
+% partir de una lista de commits y un string
+% Entradas: una lista de commits y un string
+% Salida: un string que permite visualizar de manera clara el contenido
+% de una lista de commits
 lRAndRR_to_string([],R,R):-!.
 lRAndRR_to_string([Commit|Cola],Final,StringFinal):-
     commit_to_string(Commit,CommitStr),
     string_concat(Final,CommitStr,Str2),
     lRAndRR_to_string(Cola,Str2,StringFinal).
 
+%Predicado que permite consultar el valor que debe tomar un String con una representación como un string posible de visualizar de forma comprensible al usuario a partir de una variable de entrada RepoInput.
+%Entrada: un repositorio
+%Salida: un string que permite visualizar el repositorio
 git2String(RepoInput,RepoAsString):-
     esRepoZonas(RepoInput),
     string_concat("","#################    REPOSITORIO '",S1),nombreSel(RepoInput,Nombre),

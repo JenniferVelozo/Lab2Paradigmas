@@ -18,9 +18,9 @@
 %Metas
 %Primarias
 %commitCons(Mensaje,Cambios,Commit).
+%esCommit(Commit).
 
 %Secundarias
-%esCommit(Commit).
 %mensajeSel(Commit,Mensaje).
 %cambiosSel(Commit,Cambios).
 
@@ -50,8 +50,9 @@ esCommit(Commit):-
 % Predicado que permite consultar el valor que debe tomar Mensaje a
 % partir de un commit
 % Entrada: Commit
-% Salida: un string que representa el mensaje descirptivo
+% Salida: un string que representa el mensaje descriptivo
 mensajeSel(Commit,Mensaje):- esCommit(Commit),Commit=[Mensaje,_].
+
 % Predicado que permite consultar el valor que debe tomar Cambios a
 % partir de un commit
 % Entrada: Commit

@@ -39,18 +39,13 @@
 
 %Clausulas de Horn
 %Hechos
-cuenta_elementos([],0).
-esListaArchivos([]).
-esListaCommits([]).
-deleteDup([], []).
-concatenar([],L2,L2).
-esListaStrings([]).
 
 %Reglas
 %Predicado que permite obtener el numero de elementos de una lista
 %Entrada: lista
 %Salida: numero que representa la cantidad de elementos de la lista
 %Tipo de recursión: natural
+cuenta_elementos([],0).
 cuenta_elementos([_|Lista],Cantidad):-cuenta_elementos(Lista,Tam), Cantidad is Tam+1.
 
 %Predicado que verifica si un elemento corresponde a un archivo
@@ -66,6 +61,7 @@ is_file([Nombre|Contenido]):-
 % archivos
 % Entrada:lista
 % Salida: true o false
+esListaArchivos([]).
 esListaArchivos([Cabeza|Cola]):-
     is_list(Cabeza),
     is_file(Cabeza),
@@ -74,6 +70,7 @@ esListaArchivos([Cabeza|Cola]):-
 %Predicado que verifica si un elemento correponde a una lista de commits
 %Entrada: lista
 %Salida: true o false
+esListaCommits([]).
 esListaCommits([Cabeza|Cola]):-
     is_list(Cabeza),
     esCommit(Cabeza),
@@ -83,9 +80,9 @@ esListaCommits([Cabeza|Cola]):-
 % Verifica si un determinado archivo(sólo nombre) está dentro de una lista
 % en la variable ConContenido entrega el archivo con su contenido
 esMiembro(Lista,Archivo,ConContenido):-buscarArchivo(Archivo,Lista,ConContenido).
-buscarArchivo(_,[],[]):-!,fail.
+buscarArchivo(_,[],_):-!,fail.
 buscarArchivo(Archivo,[[Archivo|Contenido]|_],[Archivo|Contenido]):-!,true.
-buscarArchivo(Archivo,[_|Cola],[Archivo|Contenido]):-buscarArchivo(Archivo,Cola,[Archivo|Contenido]).
+buscarArchivo(Archivo,[_|Cola],ConContenido):-buscarArchivo(Archivo,Cola,ConContenido).
 
 %Predicado que permite agregar un elemento en la cabeza de una lista
 %Entrada: elemento y una lista
@@ -95,18 +92,21 @@ agregarElemento(Elemento,Lista,[Elemento|Lista]).
 %Predicado que permite concatenar 2 listas
 %Entrada: 2 listas
 %Salida: lista (ambas unidas)
+concatenar([],L2,L2).
 concatenar([Cabeza|Cola],L2,[Cabeza|R]):-
     concatenar(Cola,L2,R).
 
 %Predicado que permite eliminar elementos duplicados en una lista
 %Entrada:lista
 %Salida: lista (sin elementos duplicados)
+deleteDup([], []).
 deleteDup([Elemento|Lista], [Elemento|Lista3]) :- subtract(Lista, [Elemento], Lista2), deleteDup(Lista2, Lista3).
 
 % Predicado que verifica que una lista tenga elementos de tipo
 % string
 % Entrada: lista
 % Salida: true o false
+esListaStrings([]).
 esListaStrings([Cabeza|Cola]):-
     string(Cabeza),
     esListaStrings(Cola).
