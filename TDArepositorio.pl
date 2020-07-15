@@ -2,10 +2,9 @@
 %Representación de un repositorio:
 %es una lista de 7 elementos, de la siguiente manera
 %[NombreRepo,Autor,Fecha,Workspace,Index,LocalRepository,RemoteRepository]
-%Representación de un commit: [Mensaje,Cambios]
-%Representación de un archivo: ["archivo","contenido"]
+%Representación de un archivo: ["nombre_archivo","contenido"]
 
-%%Dominios
+%Dominios
 %NombreRepo = string que representa el nombre del repositorio
 %Autor = string que representa el autor del repositorio
 %Fecha = string que representa la fecha de creación del repositorio
@@ -93,13 +92,9 @@ esRepoZonas(Repo):-
     is_list(Repo),
     cuenta_elementos(Repo,7),
     Repo=[Nombre,Autor,Fecha,WS,Index,LR,RR],
-    string(Nombre),
-    string(Autor),
-    string(Fecha),
-    esListaArchivos(WS),
-    esListaArchivos(Index),
-    esListaCommits(LR),
-    esListaCommits(RR).
+    string(Nombre),string(Autor),string(Fecha),
+    esListaArchivos(WS),esListaArchivos(Index),
+    esListaCommits(LR),esListaCommits(RR).
 
 %Selectores
 % Predicado que permite consultar el valor que debe tomar la variable

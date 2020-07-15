@@ -39,6 +39,10 @@
 
 %Clausulas de Horn
 %Hechos
+%cuenta_elementos([],0).
+%esListaArchivos([]).
+%esListaCommits([]).
+
 
 %Reglas
 %Predicado que permite obtener el numero de elementos de una lista
@@ -51,38 +55,42 @@ cuenta_elementos([_|Lista],Cantidad):-cuenta_elementos(Lista,Tam), Cantidad is T
 %Predicado que verifica si un elemento corresponde a un archivo
 %Entrada: archivo
 %Salida: true o false
-is_file([Nombre|Contenido]):-
-    cuenta_elementos([Nombre|Contenido],2),
-    string(Nombre),
-    Contenido=[Cabeza|_],
-    string(Cabeza).
+is_file(Archivo):-
+    is_list(Archivo),
+    cuenta_elementos(Archivo,2),
+    Archivo=[Nombre,Contenido],
+    string(Nombre),string(Contenido).
 
-% Predicado que verifica si un elemento corresponde a una lista de
+% Predicado que verifica si una lista corresponde a una lista de
 % archivos
 % Entrada:lista
 % Salida: true o false
+% Tipo de recursión: de cola
 esListaArchivos([]).
 esListaArchivos([Cabeza|Cola]):-
-    is_list(Cabeza),
     is_file(Cabeza),
     esListaArchivos(Cola).
 
 %Predicado que verifica si un elemento correponde a una lista de commits
 %Entrada: lista
 %Salida: true o false
+%Tipo de recursión: de cola
 esListaCommits([]).
 esListaCommits([Cabeza|Cola]):-
-    is_list(Cabeza),
     esCommit(Cabeza),
     esListaCommits(Cola).
 
 
 % Verifica si un determinado archivo(sólo nombre) está dentro de una lista
-% en la variable ConContenido entrega el archivo con su contenido
-esMiembro(Lista,Archivo,ConContenido):-buscarArchivo(Archivo,Lista,ConContenido).
-buscarArchivo(_,[],_):-!,fail.
-buscarArchivo(Archivo,[[Archivo|Contenido]|_],[Archivo|Contenido]):-!,true.
-buscarArchivo(Archivo,[_|Cola],[Archivo|Contenido]):-buscarArchivo(Archivo,Cola,[Archivo|Contenido]).
+% En la variable ConContenido entrega el archivo con su contenido
+% Predicado que permite consultar el valor que debe tomar ConContenido a
+% partir de un nombre de archivo y una lista
+% Entrada: nombre del archivo (string) y una lista
+% Salida: archivo
+% Tipo de recursión: de cola
+esMiembro(_,[],_):-!,fail.
+esMiembro(Nombre,[[Nombre|Contenido]|_],[Nombre|Contenido]):-!.
+esMiembro(Nombre,[_|Cola],Archivo):- string(Nombre), esMiembro(Nombre,Cola,Archivo).
 
 %Predicado que permite agregar un elemento en la cabeza de una lista
 %Entrada: elemento y una lista
@@ -92,6 +100,7 @@ agregarElemento(Elemento,Lista,[Elemento|Lista]).
 %Predicado que permite concatenar 2 listas
 %Entrada: 2 listas
 %Salida: lista (ambas unidas)
+%Tipo de recursión: natural
 concatenar([],L2,L2).
 concatenar([Cabeza|Cola],L2,[Cabeza|R]):-
     concatenar(Cola,L2,R).
@@ -99,6 +108,7 @@ concatenar([Cabeza|Cola],L2,[Cabeza|R]):-
 %Predicado que permite eliminar elementos duplicados en una lista
 %Entrada:lista
 %Salida: lista (sin elementos duplicados)
+%Tipo de recursión: natural
 deleteDup([], []).
 deleteDup([Elemento|Lista], [Elemento|Lista3]) :- subtract(Lista, [Elemento], Lista2), deleteDup(Lista2, Lista3).
 
@@ -106,6 +116,7 @@ deleteDup([Elemento|Lista], [Elemento|Lista3]) :- subtract(Lista, [Elemento], Li
 % string
 % Entrada: lista
 % Salida: true o false
+% Tipo de recursión: de cola
 esListaStrings([]).
 esListaStrings([Cabeza|Cola]):-
     string(Cabeza),

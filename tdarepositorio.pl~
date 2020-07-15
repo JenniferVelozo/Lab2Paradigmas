@@ -2,8 +2,7 @@
 %Representación de un repositorio:
 %es una lista de 7 elementos, de la siguiente manera
 %[NombreRepo,Autor,Fecha,Workspace,Index,LocalRepository,RemoteRepository]
-%Representación de un commit: [Mensaje,Cambios]
-%Representación de un archivo: ["archivo","contenido"]
+%Representación de un archivo: ["nombre_archivo","contenido"]
 
 %%Dominios
 %NombreRepo = string que representa el nombre del repositorio
@@ -41,7 +40,6 @@
 %localR(LR).
 %remoteR(RR).
 
-
 %Metas
 %Primarias
 %zonasCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo).
@@ -63,8 +61,6 @@
 %indexx(Index).
 %localR(LR).
 %remoteR(RR).
-
-
 
 %Clausulas de Horn
 %Hechos
@@ -96,13 +92,9 @@ esRepoZonas(Repo):-
     is_list(Repo),
     cuenta_elementos(Repo,7),
     Repo=[Nombre,Autor,Fecha,WS,Index,LR,RR],
-    string(Nombre),
-    string(Autor),
-    string(Fecha),
-    esListaArchivos(WS),
-    esListaArchivos(Index),
-    esListaCommits(LR),
-    esListaCommits(RR).
+    string(Nombre),string(Autor),string(Fecha),
+    esListaArchivos(WS),esListaArchivos(Index),
+    esListaCommits(LR),esListaCommits(RR).
 
 %Selectores
 % Predicado que permite consultar el valor que debe tomar la variable
@@ -151,7 +143,7 @@ remoteRSel(Repo,RR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,_,RR].
 % Predicado que permite consultar el valor que debe tomar la variable
 % NuevoRepo a partir de un repositorio de entrada y un nuevo Workspace
 % Entrada: repositorio, nuevo Workspace
-% Salida: nuevorepositorio con la zona de trabajo Workspace modificada
+% Salida: nuevo repositorio con la zona de trabajo Workspace modificada
 setWorkspace(Repo,NewWS,NuevoRepo):-
     esRepoZonas(Repo),esListaArchivos(NewWS),
     nombreSel(Repo,Nombre),
