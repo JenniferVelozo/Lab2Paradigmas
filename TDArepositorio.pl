@@ -1,7 +1,9 @@
 :-[predicadosGenerales].
-%Representación de un repositorio:
-%es una lista de 7 elementos, de la siguiente manera
+%Estructura base del TDA repositorio
+%Representación del TDA repositorio:
+%lista de 7 elementos, de la siguiente manera
 %[NombreRepo,Autor,Fecha,Workspace,Index,LocalRepository,RemoteRepository]
+
 %Representación de un archivo: ["nombre_archivo","contenido"]
 
 %Dominios

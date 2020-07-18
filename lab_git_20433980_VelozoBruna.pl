@@ -54,6 +54,9 @@
 
 %Clausulas de Horn
 %Hechos
+%Los hechos están comentados puesto que al momento de realizar una
+%consulta, este arroja warnings indicando que los predicados no están
+%juntos.
 %gitAddAux(_,[],Movidos,Movidos).
 %gitCommitAux(RepoInput,_,[],RepoInput).
 %gitPushAux(RepoInput,_,[],RepoInput).
@@ -78,7 +81,7 @@ gitInit(NombreRepo,Autor,RepoOutput):-
 % Predicado que permite consultar el valor que debe tomar RepoOutput a
 % partir de un repositorio de entrada RepoInput y una lista de archivos
 % (con contenido).
-% Entrada: repositorio y una lista de archivos
+% Entrada: repositorio y una lista de archivos.
 % Salida: repositorio con la zona de trabajo Workspace modificada, con
 % los archivos agregados en esta.
 llenarWorkspace(RepoInput,ListaArchivos,RepoOutput):-
@@ -92,9 +95,9 @@ llenarWorkspace(RepoInput,ListaArchivos,RepoOutput):-
 % Predicado que permite consultar el valor que debe tomar Output a
 % partir de un repositorio, una lista de archivos y una lista.
 % Entradas: un repositorio, lista de archivos y una lista que se le debe
-% entregar vacía al momento de usar este predicado
+% entregar vacía al momento de usar este predicado.
 % Salida: una lista de archivos que están en la lista de entrada y en el
-% workspace, sin repetir
+% workspace, sin repetir.
 gitAddAux(_,[],Movidos,Movidos):-!.
 gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
     esRepoZonas(RepoInput),
@@ -105,8 +108,8 @@ gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
     gitAddAux(RepoInput,Cola,Movidos2,Output).
 
 %Predicado que permite consultar el valor que debe tomar RepoOutput a partir de un repositorio de entrada RepoInput tal que en RepoOutput se mueven los archivos desde la zona Workspace a la zona Index.
-%Entradas: repositorio y una lista de nombres de archivo
-%Salida: un repositorio con el Index modificado
+%Entradas: repositorio y una lista de nombres de archivo.
+%Salida: un repositorio con el Index modificado.
 gitAdd(RepoInput,Archivos,RepoOutput):-
     esRepoZonas(RepoInput), %verifica que RepoInput corresponda a un repositorio zona
     esListaStrings(Archivos), %se verifica que la lista ingresada sea una lista de strings
@@ -116,7 +119,7 @@ gitAdd(RepoInput,Archivos,RepoOutput):-
     setIndex(RepoInput,NuevoIndex,RepoOutput).
 
 /***************************************************** GIT COMMIT ******************************************************************/
-% Predicado que permite consultar el valor que debe tomar NuevaZona2 a
+% Predicado que permite consultar el valor que debe tomar NuevaZona a
 % partir de un repositorio de entrada, un mensaje descriptivo y una
 % lista de archivos que representa los cambios hechos en el index.
 % Entradas: repositorio,mensaje(string), y cambios(lista de archivos)
@@ -191,7 +194,7 @@ commit_to_string(Commit,StringFinal):-
     text_to_string(Mensaje,MsjStr),
     string_concat("   Mensaje: ",MsjStr,Str),
     cambiosSel(Commit,Cambios),
-    wsAndIndex_to_string(Cambios,"\n",Str2),
+    listaArchivos_to_string(Cambios,"\n",Str2),
     string_concat(Str,Str2,StringFinal).
 
 % Predicado que permite consultar el valor que debe tomar StringFinal a
@@ -236,6 +239,70 @@ git2String(RepoInput,RepoAsString):-
     string_concat(S16,"Commits en Remote Repository:\n",S17),
     remoteRSel(RepoInput,RR),listaCommits_to_string(RR,"",S18),string_concat(S17,S18,S19),
     string_concat(S19,"\n##### FIN DE REPRESENTACIÓN COMO STRING DEL REPOSITORIO #####\n\n",RepoAsString).
+
+
+/***************************************************** EJEMPLOS DE USO *************************************************************/
+/*Predicado gitInit
+
+1.-gitInit("Lab2","Jennifer Velozo",RepoOutput).
+
+2.-gitInit("Lab1","Juan Pérez",RepoOutput).
+
+3.-gitInit("Laboratorio 3","Miguel Correa",RepoOutput).
+
+*/
+
+/*Predicado llenarWorkspace
+
+1.-gitInit("Lab2","Jennifer Velozo",Repo),llenarWorkspace(Repo,[["file1.txt","Instrucciones especiales"],["f2.pl","Predicados Git"],["archivo3.docx","Informe de proyecto"]],RepoOutput).
+
+2.-llenarWorkspace(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:12:54 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [], [], []],[["file2.txt","contenido file2"]],RepoOutput).
+
+3.-gitInit("Lab2","Jennifer Velozo",Repo),llenarWorkspace(Repo,[["file1.pl","codigo principal"]],RepoOutput).
+
+*/
+
+/*Predicado gitAdd
+
+1.-gitInit("Lab2","Jennifer Velozo",Repo),llenarWorkspace(Repo,[["file1.txt","Instrucciones especiales"],["f2.pl","Predicados Git"],["archivo3.docx","Informe de proyecto"]],Repo2),gitAdd(Repo2,["file1.txt","archivo3.docx"],RepoOutput).
+
+2.-gitAdd(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [], [], []],["f2.pl","file1.txt"],RepoOutput).
+
+3.-gitAdd(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"]], [], [], []],["f2.pl"],RepoOutput).
+
+*/
+
+/*Predicado gitCommit
+
+1.-gitCommit(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [], [], []],"Ediciones",RepoOutput).
+
+2.-gitCommit(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [["f2.pl", "Predicados Git"]], [], []],"Ediciones",RepoOutput).
+
+3.-gitCommit(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [["f2.pl", "Predicados Git"],["file1.txt", "Instrucciones especiales"]], [], []],"Ediciones 2",RepoOutput).
+
+*/
+
+/*Predicado gitPush
+1.- gitPush(["Lab2","Jennifer","17/07/2020 18:33",[["file1.c","contenido"]],[],[["Ediciones",[["file1.c","contenido"]]]],[]],RepoOutput).
+
+2.-gitInit("Lab2","Jennifer",Inicial),llenarWorkspace(Inicial,[["file1.pl", "contenido"], ["ejercicios.pl", "contenido"]],R),gitAdd(R,["file1.pl"],R2),gitCommit(R2,"Ediciones varias",R3),gitPush(R3,RepoOutput).
+
+3.-gitPush(["Lab2","Jennifer","17/07/2020 18:33",[["file1.c","contenido"]],[],[["Ediciones",[["file1.c","contenido"]]]],[["Corección de errores",[["archivo.pl","contenido"],["archivo2.pl","contenido2"]]]]],RepoOutput).
+*/
+
+/*Predicado git2String
+
+1.- git2String(["Lab2","Jennifer","17/07/2020 18:33",[["file1.c","contenido"]],[],[["Ediciones",[["file1.c","contenido"]]]],[["Corección de errores",[["archivo.pl","contenido"],["archivo2.pl","contenido2"]]]]],RepoAsString).
+
+2.-git2String(["Lab2","Jennifer","17/07/2020 18:33",[],[],[],[]],RepoAsString).
+
+3.-gitInit("lab2","Jennifer",R),llenarWorkspace(R,[["file1","c1"],["file.rkt","c2"]],R2),gitAdd(R2,["file.rkt"],R3),git2String(R3,RepoAsString).
+*/
+
+
+
+
+
 
 
 

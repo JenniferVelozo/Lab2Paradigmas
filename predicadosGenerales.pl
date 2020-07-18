@@ -40,7 +40,7 @@
 %Hechos
 %Los hechos están comentados puesto que al momento de realizar una
 %consulta, este arroja warnings indicando que los predicados no están
-%juntos
+%juntos.
 %cuenta_elementos([],0).
 %esListaArchivos([]).
 %esListaCommits([]).
@@ -87,8 +87,8 @@ esListaCommits([Cabeza|Cola]):-
 
 
 % Verifica si un determinado archivo(sólo nombre) está dentro de una lista
-% En la variable ConContenido entrega el archivo con su contenido
-% Predicado que permite consultar el valor que debe tomar ConContenido a
+% En la variable Archivo entrega el archivo con su contenido
+% Predicado que permite consultar el valor que debe tomar Archivo a
 % partir de un nombre de archivo y una lista
 % Entrada: nombre del archivo (string) y una lista
 % Salida: archivo

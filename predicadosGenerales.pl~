@@ -7,15 +7,14 @@
 %Commit = lista de 2 elementos, donde el primero es un string y el
 %segundo es una lista de archivos
 %NombreArchivo = string
-%Elemento = lista o string
+%Elemento = lista, string, numero o atomo
 
 %Predicados
 %esListaArchivos(ListaArchivos).
 %esListaCommits(ListaCommits).
 %cuenta_elementos(Lista,Cantidad).
 %is_file(Archivo).
-%esMiembro(Lista,Archivo,ConContenido).
-%buscarArchivo(NombreArchivo,ListaArchivos,Archivo).
+%esMiembro(NombreArchivo,ListaArchivos,Archivo).
 %agregarElemento(Elemento,Lista,Lista).
 %concatenar(Lista,Lista,Lista).
 %deleteDup(Lista,Lista).
@@ -26,23 +25,29 @@
 %Primarias
 %esListaArchivos(ListaArchivos).
 %esListaCommits(ListaCommits).
-%esMiembro(Lista,Archivo,ConContenido).
+%esMiembro(NombreArchivo,ListaArchivos,Archivo).
 %agregarElemento(Elemento,Lista,Lista).
 %concatenar(Lista,Lista,Lista).
-
-%Secundarias
-%cuenta_elementos(Lista,Cantidad).
-%buscarArchivo(NombreArchivo,ListaArchivos,Archivo).
-%is_file(Archivo).
 %deleteDup(Lista,Lista).
 %esListaStrings(Lista).
 
+
+%Secundarias
+%cuenta_elementos(Lista,Cantidad).
+%is_file(Archivo).
+
 %Clausulas de Horn
 %Hechos
+%Los hechos están comentados puesto que al momento de realizar una
+%consulta, este arroja warnings indicando que los predicados no están
+%juntos
 %cuenta_elementos([],0).
 %esListaArchivos([]).
 %esListaCommits([]).
-
+%esMiembro(Nombre,[[Nombre|Contenido]|_],[Nombre|Contenido]):-!.
+%concatenar([],L2,L2).
+%deleteDup([], []).
+%esListaStrings([]).
 
 %Reglas
 %Predicado que permite obtener el numero de elementos de una lista

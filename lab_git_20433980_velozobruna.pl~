@@ -238,6 +238,70 @@ git2String(RepoInput,RepoAsString):-
     string_concat(S19,"\n##### FIN DE REPRESENTACIÓN COMO STRING DEL REPOSITORIO #####\n\n",RepoAsString).
 
 
+/***************************************************** EJEMPLOS DE USO *************************************************************/
+/*Predicado gitInit
+
+1.-gitInit("Lab2","Jennifer Velozo",RepoOutput).
+
+2.-gitInit("Lab1","Juan Pérez",RepoOutput).
+
+3.-gitInit("Laboratorio 3","Miguel Correa",RepoOutput).
+
+*/
+
+/*Predicado llenarWorkspace
+
+1.-gitInit("Lab2","Jennifer Velozo",Repo),llenarWorkspace(Repo,[["file1.txt","Instrucciones especiales"],["f2.pl","Predicados Git"],["archivo3.docx","Informe de proyecto"]],RepoOutput).
+
+2.-llenarWorkspace(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:12:54 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [], [], []],[["file2.txt","contenido file2"]],RepoOutput).
+
+3.-gitInit("Lab2","Jennifer Velozo",Repo),llenarWorkspace(Repo,[["file1.pl","codigo principal"]],RepoOutput).
+
+*/
+
+/*Predicado gitAdd
+
+1.-gitInit("Lab2","Jennifer Velozo",Repo),llenarWorkspace(Repo,[["file1.txt","Instrucciones especiales"],["f2.pl","Predicados Git"],["archivo3.docx","Informe de proyecto"]],Repo2),gitAdd(Repo2,["file1.txt","archivo3.docx"],RepoOutput).
+
+2.-gitAdd(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [], [], []],["f2.pl","file1.txt"],RepoOutput).
+
+3.-gitAdd(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"]], [], [], []],["f2.pl"],RepoOutput).
+
+*/
+
+/*Predicado gitCommit
+
+1.-gitCommit(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [], [], []],"Ediciones",RepoOutput).
+
+2.-gitCommit(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [["f2.pl", "Predicados Git"]], [], []],"Ediciones",RepoOutput).
+
+3.-gitCommit(["Lab2", "Jennifer Velozo", "Fri Jul 17 18:21:28 2020", [["file1.txt", "Instrucciones especiales"], ["f2.pl", "Predicados Git"], ["archivo3.docx", "Informe de proyecto"]], [["f2.pl", "Predicados Git"],["file1.txt", "Instrucciones especiales"]], [], []],"Ediciones 2",RepoOutput).
+
+*/
+
+/*Predicado gitPush
+1.- gitPush(["Lab2","Jennifer","17/07/2020 18:33",[["file1.c","contenido"]],[],[["Ediciones",[["file1.c","contenido"]]]],[]],RepoOutput).
+
+2.-gitInit("Lab2","Jennifer",Inicial),llenarWorkspace(Inicial,[["file1.pl", "contenido"], ["ejercicios.pl", "contenido"]],R),gitAdd(R,["file1.pl"],R2),gitCommit(R2,"Ediciones varias",R3),gitPush(R3,RepoOutput).
+
+3.-gitPush(["Lab2","Jennifer","17/07/2020 18:33",[["file1.c","contenido"]],[],[["Ediciones",[["file1.c","contenido"]]]],[["Corección de errores",[["archivo.pl","contenido"],["archivo2.pl","contenido2"]]]]],RepoOutput).
+*/
+
+/*Predicado git2String
+
+1.- git2String(["Lab2","Jennifer","17/07/2020 18:33",[["file1.c","contenido"]],[],[["Ediciones",[["file1.c","contenido"]]]],[["Corección de errores",[["archivo.pl","contenido"],["archivo2.pl","contenido2"]]]]],RepoAsString).
+
+2.-git2String(["Lab2","Jennifer","17/07/2020 18:33",[],[],[],[]],RepoAsString).
+
+3.-gitInit("lab2","Jennifer",R),llenarWorkspace(R,[["file1","c1"],["file.rkt","c2"]],R2),gitAdd(R2,["file.rkt"],R3),git2String(R3,RepoAsString).
+*/
+
+
+
+
+
+
+
 
 
 

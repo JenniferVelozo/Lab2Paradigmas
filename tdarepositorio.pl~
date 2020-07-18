@@ -1,10 +1,11 @@
 :-[predicadosGenerales].
+%Estructura base del TDA repositorio
 %Representación de un repositorio:
-%es una lista de 7 elementos, de la siguiente manera
+%lista de 7 elementos, de la siguiente manera
 %[NombreRepo,Autor,Fecha,Workspace,Index,LocalRepository,RemoteRepository]
 %Representación de un archivo: ["nombre_archivo","contenido"]
 
-%%Dominios
+%Dominios
 %NombreRepo = string que representa el nombre del repositorio
 %Autor = string que representa el autor del repositorio
 %Fecha = string que representa la fecha de creación del repositorio

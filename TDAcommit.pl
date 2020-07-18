@@ -1,7 +1,10 @@
 :-[predicadosGenerales].
-%Representación de un commit: [Mensaje,Cambios]
-%Representación de cambios: lista de archivos
-%Representación de un archivo: ["archivo","contenido"]
+%Estructura base del TDA commit:
+%Representación del TDA commit:
+%lista de 2 elementos de la siguiente manera
+%[Mensaje,Cambios]
+
+%Representación de un archivo: ["nombre_archivo","contenido"]
 
 %Dominios
 %Mensaje = string que representa en mensaje descriptivo del commit
