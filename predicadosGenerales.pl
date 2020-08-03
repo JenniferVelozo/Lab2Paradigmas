@@ -100,7 +100,7 @@ esMiembro(Nombre,[_|Cola],Archivo):- string(Nombre), esMiembro(Nombre,Cola,Archi
 %Predicado que permite agregar un elemento en la cabeza de una lista
 %Entrada: elemento y una lista
 %Salida: lista con el elemento agregado en la cabeza de la lista
-agregarElemento(Elemento,Lista,[Elemento|Lista]).
+agregarElemento(Elemento,Lista,[Elemento|Lista]):-is_list(Lista).
 
 %Predicado que permite concatenar 2 listas
 %Entrada: 2 listas
@@ -126,3 +126,51 @@ esListaStrings([]).
 esListaStrings([Cabeza|Cola]):-
     string(Cabeza),
     esListaStrings(Cola).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

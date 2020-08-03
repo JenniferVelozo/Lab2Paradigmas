@@ -54,6 +54,9 @@
 
 %Clausulas de Horn
 %Hechos
+%Los hechos están comentados puesto que al momento de realizar una
+%consulta, este arroja warnings indicando que los predicados no están
+%juntos.
 %gitAddAux(_,[],Movidos,Movidos).
 %gitCommitAux(RepoInput,_,[],RepoInput).
 %gitPushAux(RepoInput,_,[],RepoInput).
@@ -78,7 +81,7 @@ gitInit(NombreRepo,Autor,RepoOutput):-
 % Predicado que permite consultar el valor que debe tomar RepoOutput a
 % partir de un repositorio de entrada RepoInput y una lista de archivos
 % (con contenido).
-% Entrada: repositorio y una lista de archivos
+% Entrada: repositorio y una lista de archivos.
 % Salida: repositorio con la zona de trabajo Workspace modificada, con
 % los archivos agregados en esta.
 llenarWorkspace(RepoInput,ListaArchivos,RepoOutput):-
@@ -92,9 +95,10 @@ llenarWorkspace(RepoInput,ListaArchivos,RepoOutput):-
 % Predicado que permite consultar el valor que debe tomar Output a
 % partir de un repositorio, una lista de archivos y una lista.
 % Entradas: un repositorio, lista de archivos y una lista que se le debe
-% entregar vacía al momento de usar este predicado
+% entregar vacía al momento de usar este predicado.
 % Salida: una lista de archivos que están en la lista de entrada y en el
-% workspace, sin repetir
+% workspace, sin repetir.
+% Tipo de recursión: de cola
 gitAddAux(_,[],Movidos,Movidos):-!.
 gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
     esRepoZonas(RepoInput),
@@ -105,8 +109,8 @@ gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
     gitAddAux(RepoInput,Cola,Movidos2,Output).
 
 %Predicado que permite consultar el valor que debe tomar RepoOutput a partir de un repositorio de entrada RepoInput tal que en RepoOutput se mueven los archivos desde la zona Workspace a la zona Index.
-%Entradas: repositorio y una lista de nombres de archivo
-%Salida: un repositorio con el Index modificado
+%Entradas: repositorio y una lista de nombres de archivo.
+%Salida: un repositorio con el Index modificado.
 gitAdd(RepoInput,Archivos,RepoOutput):-
     esRepoZonas(RepoInput), %verifica que RepoInput corresponda a un repositorio zona
     esListaStrings(Archivos), %se verifica que la lista ingresada sea una lista de strings
@@ -116,7 +120,7 @@ gitAdd(RepoInput,Archivos,RepoOutput):-
     setIndex(RepoInput,NuevoIndex,RepoOutput).
 
 /***************************************************** GIT COMMIT ******************************************************************/
-% Predicado que permite consultar el valor que debe tomar NuevaZona2 a
+% Predicado que permite consultar el valor que debe tomar NuevaZona a
 % partir de un repositorio de entrada, un mensaje descriptivo y una
 % lista de archivos que representa los cambios hechos en el index.
 % Entradas: repositorio,mensaje(string), y cambios(lista de archivos)
@@ -206,12 +210,14 @@ listaCommits_to_string([Commit|Cola],StrAcum,StringFinal):-
     string_concat(StrAcum,CommitStr,Str2),
     listaCommits_to_string(Cola,Str2,StringFinal).
 
-%Predicado que permite consultar el valor que debe tomar un String con una representación como un string posible de visualizar de forma comprensible al usuario a partir de una variable de entrada RepoInput.
-%Entrada: un repositorio
-%Salida: un string que permite visualizar el repositorio
+% Predicado que permite consultar el valor que debe tomar un String como
+% una representación posible de visualizar de forma comprensible al
+% usuario a partir de una variable de entrada RepoInput.
+% Entrada: un repositorio
+% Salida: un string que permite visualizar el repositorio
 git2String(RepoInput,RepoAsString):-
     esRepoZonas(RepoInput),
-    string_concat("","#################    REPOSITORIO '",S1),nombreSel(RepoInput,Nombre),
+    string_concat("","\n\n#################    REPOSITORIO '",S1),nombreSel(RepoInput,Nombre),
     text_to_string(Nombre,NombreStr),string_concat(S1,NombreStr,S2),string_concat(S2,"'    ##################\n",S3),
 
     string_concat(S3,"Fecha de creación: ",S4),

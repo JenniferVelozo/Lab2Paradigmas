@@ -1,10 +1,11 @@
 :-[predicadosGenerales].
 %Estructura base del TDA repositorio
 %Representación del TDA repositorio:
-%lista de 7 elementos, de la siguiente manera
+%lista de 7 elementos, ordenado de la siguiente manera
 %[NombreRepo,Autor,Fecha,Workspace,Index,LocalRepository,RemoteRepository]
 
-%Representación de un archivo: ["nombre_archivo","contenido"]
+%Representación de un archivo: ["nombre_archivo","contenido"],
+%donde nombre_archivo y contenido son strings
 
 %Dominios
 %NombreRepo = string que representa el nombre del repositorio
@@ -91,8 +92,8 @@ repoCons(NombreRepo,Autor,Fecha,WS,Index,LR,RR,Repo):-
 % Entrada: repositorio
 % Salida: true o false
 esRepoZonas(Repo):-
-    is_list(Repo),
-    cuenta_elementos(Repo,7),
+    %se verifica que Repo sea una lista de 7 elementos
+    is_list(Repo),cuenta_elementos(Repo,7),
     Repo=[Nombre,Autor,Fecha,WS,Index,LR,RR],
     string(Nombre),string(Autor),string(Fecha),
     esListaArchivos(WS),esListaArchivos(Index),
@@ -102,43 +103,43 @@ esRepoZonas(Repo):-
 % Predicado que permite consultar el valor que debe tomar la variable
 % NombreRepo a partir de un repositorio de entrada
 % Entrada: repositorio
-% Salida: nombre del repositorio
+% Salida: nombre del repositorio(string)
 nombreSel(Repo,NombreRepo):-esRepoZonas(Repo),Repo=[NombreRepo,_,_,_,_,_,_].
 
 % Predicado que permite consultar el valor que debe tomar la variable
 % Autor a partir de un repositorio de entrada
 % Entrada: repositorio
-% Salida: autor del repositorio
+% Salida: autor del repositorio(string)
 autorSel(Repo,Autor):-esRepoZonas(Repo),Repo=[_,Autor,_,_,_,_,_].
 
 % Predicado que permite consultar el valor que debe tomar la variable
 % Fecha a partir de un repositorio de entrada
 % Entrada: repositorio
-% Salida: fecha de creación del repositorio
+% Salida: fecha de creación del repositorio(string)
 fechaSel(Repo,Fecha):-esRepoZonas(Repo),Repo=[_,_,Fecha,_,_,_,_].
 
 % Predicado que permite consultar el valor que debe tomar la variable
 % WS a partir de un repositorio de entrada
 % Entrada: repositorio
-% Salida: zona de trabajo Workspace
+% Salida: zona de trabajo Workspace(lista de archivos)
 workspaceSel(Repo,WS):-esRepoZonas(Repo),Repo=[_,_,_,WS,_,_,_].
 
 % Predicado que permite consultar el valor que debe tomar la variable
 % Index a partir de un repositorio de entrada
 % Entrada: repositorio
-% Salida: zona de trabajo Index
+% Salida: zona de trabajo Index(lista de archivos)
 indexSel(Repo,Index):-esRepoZonas(Repo),Repo=[_,_,_,_,Index,_,_].
 
 % Predicado que permite consultar el valor que debe tomar la variable
 % LR a partir de un repositorio de entrada
 % Entrada: repositorio
-% Salida: zona de trabajo Local Repository
+% Salida: zona de trabajo Local Repository(lista de commits)
 localRSel(Repo,LR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,LR,_].
 
 % Predicado que permite consultar el valor que debe tomar la variable
 % RR a partir de un repositorio de entrada
 % Entrada: repositorio
-% Salida: zona de trabajo Local Repository
+% Salida: zona de trabajo Local Repository(lista de commits)
 remoteRSel(Repo,RR):-esRepoZonas(Repo),Repo=[_,_,_,_,_,_,RR].
 
 %Modificadores
@@ -201,6 +202,14 @@ setRemoteR(Repo,NewRR,NuevoRepo):-
     indexSel(Repo,Index),
     localRSel(Repo,LR),
     repoCons(Nombre,Autor,Fecha,WS,Index,LR,NewRR,NuevoRepo).
+
+
+
+
+
+
+
+
 
 
 

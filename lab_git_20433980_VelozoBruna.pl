@@ -98,12 +98,15 @@ llenarWorkspace(RepoInput,ListaArchivos,RepoOutput):-
 % entregar vacía al momento de usar este predicado.
 % Salida: una lista de archivos que están en la lista de entrada y en el
 % workspace, sin repetir.
+% Tipo de recursión: de cola
 gitAddAux(_,[],Movidos,Movidos):-!.
 gitAddAux(RepoInput,[Cabeza|Cola],Salida,Output):-
     esRepoZonas(RepoInput),
     workspaceSel(RepoInput,WS),
+    %se verifica si el archivo ubicado en la cabeza de lista está dentro del workspace
     esMiembro(Cabeza,WS,Archivo),
     agregarElemento(Archivo,Salida,Movidos),
+    %se eliminan archivos duplicados en caso de haber
     deleteDup(Movidos,Movidos2),
     gitAddAux(RepoInput,Cola,Movidos2,Output).
 
@@ -175,6 +178,7 @@ gitPush(RepoInput,RepoOutput):-
 % vacío al momento de usar este predicado).
 % Salida: un string que permite visualizar de manera clara el contenido
 % de una lista de archivos
+% Tipo de recursión: de cola
 listaArchivos_to_string([],StringFinal,StringFinal):-!.
 listaArchivos_to_string([Archivo|Cola],StrAcum,StringFinal):-
     atomics_to_string(Archivo,' : ',StringArch),
@@ -203,18 +207,21 @@ commit_to_string(Commit,StringFinal):-
 % al momento de usar este predicado)
 % Salida: un string que permite visualizar de manera clara el
 % contenido de una lista de commits
+% Tipo de recursión: de cola
 listaCommits_to_string([],StringFinal,StringFinal):-!.
 listaCommits_to_string([Commit|Cola],StrAcum,StringFinal):-
     commit_to_string(Commit,CommitStr),
     string_concat(StrAcum,CommitStr,Str2),
     listaCommits_to_string(Cola,Str2,StringFinal).
 
-%Predicado que permite consultar el valor que debe tomar un String con una representación como un string posible de visualizar de forma comprensible al usuario a partir de una variable de entrada RepoInput.
-%Entrada: un repositorio
-%Salida: un string que permite visualizar el repositorio
+% Predicado que permite consultar el valor que debe tomar un String como
+% una representación posible de visualizar de forma comprensible al
+% usuario a partir de una variable de entrada RepoInput.
+% Entrada: un repositorio
+% Salida: un string que permite visualizar el repositorio
 git2String(RepoInput,RepoAsString):-
     esRepoZonas(RepoInput),
-    string_concat("","#################    REPOSITORIO '",S1),nombreSel(RepoInput,Nombre),
+    string_concat("","\n\n#################    REPOSITORIO '",S1),nombreSel(RepoInput,Nombre),
     text_to_string(Nombre,NombreStr),string_concat(S1,NombreStr,S2),string_concat(S2,"'    ##################\n",S3),
 
     string_concat(S3,"Fecha de creación: ",S4),
@@ -298,6 +305,16 @@ git2String(RepoInput,RepoAsString):-
 
 3.-gitInit("lab2","Jennifer",R),llenarWorkspace(R,[["file1","c1"],["file.rkt","c2"]],R2),gitAdd(R2,["file.rkt"],R3),git2String(R3,RepoAsString).
 */
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,16 +1,17 @@
 :-[predicadosGenerales].
-%Estructura base del TDA commit:
+%Estructura base del TDA commit
 %Representación del TDA commit:
-%lista de 2 elementos de la siguiente manera
+%lista de 2 elementos ordenados de la siguiente manera
 %[Mensaje,Cambios]
 
-%Representación de un archivo: ["nombre_archivo","contenido"]
+%Representación de un archivo: ["nombre_archivo","contenido"],
+%donde nombre_archivo y contenido son strings
 
 %Dominios
-%Mensaje = string que representa en mensaje descriptivo del commit
+%Mensaje = string que representa el mensaje descriptivo del commit
 %Cambios = lista de archivos
 %Commit = lista de 2 elementos, donde el primero corresponde al mensaje
-%y el segundo es una lista de archivos
+%y el segundo es una lista de archivos que representa los cambios
 
 %Predicados
 %commitCons(Mensaje,Cambios,Commit).
@@ -34,8 +35,7 @@
 %a partir de un mensaje descriptivo y una lista de archivos
 %Entradas: string que representa un mensaje descriptivo,
 %y una lista de archivos que representa los cambios
-%Salida: una lista de 2 elementos, donde el primero es el mensaje y el
-% segundo es una lista de archivos
+%Salida: un commit
 commitCons(Mensaje,Cambios,Commit):-
     string(Mensaje),
     esListaArchivos(Cambios),
@@ -64,5 +64,7 @@ mensajeSel(Commit,Mensaje):- esCommit(Commit),Commit=[Mensaje,_].
 % Entrada: Commit
 % Salida: una lista de archivos que representa los cambios
 cambiosSel(Commit,Cambios):- esCommit(Commit),Commit=[_,Cambios].
+
+
 
 
